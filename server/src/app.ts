@@ -12,6 +12,7 @@ import workerAuthRoutes from './routes/workerAuthRoutes';
 import seedRoutes from './routes/seedRoutes';
 import userRoutes from './routes/userRoutes';
 import invoiceRoutes from './routes/invoiceRoutes';
+import aiRoutes from './routes/aiRoutes';
 
 const app: Application = express();
 
@@ -44,6 +45,7 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/worker-auth', workerAuthRoutes); // Public worker registration
 app.use('/api/test', seedRoutes);
+app.use('/api/ai', aiRoutes);
 
 
 
