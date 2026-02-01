@@ -16,7 +16,13 @@ import {
     Pie,
     Cell,
     Tooltip,
-    ResponsiveContainer
+    ResponsiveContainer,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Legend
 } from 'recharts';
 import { gsap } from 'gsap';
 import api from '@/lib/api';
@@ -30,6 +36,7 @@ export default function Dashboard() {
     const [stats, setStats] = useState<any>(null);
     const [insights, setInsights] = useState<any[]>([]);
     const [costs, setCosts] = useState<any[]>([]);
+    const [profitability, setProfitability] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -40,14 +47,16 @@ export default function Dashboard() {
             try {
                 if (user.role === 'admin') {
                     // Admin Data Fetch
-                    const [statsRes, insightsRes, costsRes] = await Promise.all([
+                    const [statsRes, insightsRes, costsRes, profitRes] = await Promise.all([
                         api.get('/analytics/stats'),
                         api.get('/analytics/ai-insights'),
-                        api.get('/analytics/costs')
+                        api.get('/analytics/costs'),
+                        api.get('/analytics/profitability')
                     ]);
                     setStats(statsRes.data);
                     setInsights(insightsRes.data);
                     setCosts(costsRes.data);
+                    setProfitability(profitRes.data);
                 } else {
                     // Worker Data Fetch (Currently just simple placeholder or user-specific logic)
                     // We can add specific worker stats endpoints here later
@@ -136,7 +145,7 @@ export default function Dashboard() {
             </header>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div className="card flex items-center gap-4">
                     <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-blue-50 text-blue-600">
                         <Briefcase size={24} />
@@ -155,13 +164,23 @@ export default function Dashboard() {
                         <p className="text-2xl font-bold">{stats?.activeWorkers || 0}</p>
                     </div>
                 </div>
+                {/* Revenue Card */}
+                <div className="card flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600">
+                        <TrendingUp size={24} />
+                    </div>
+                    <div>
+                        <h3 className="font-semibold text-secondary text-sm">Revenue (Month)</h3>
+                        <p className="text-2xl font-bold text-emerald-600">₹{stats?.monthlyRevenue?.toLocaleString() || 0}</p>
+                    </div>
+                </div>
                 <div className="card flex items-center gap-4">
                     <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-orange-50 text-orange-600">
                         <DollarSign size={24} />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-secondary text-sm">Monthly Expenses</h3>
-                        <p className="text-2xl font-bold">₹{stats?.monthlyExpenses?.toLocaleString() || 0}</p>
+                        <h3 className="font-semibold text-secondary text-sm">Expenses (Month)</h3>
+                        <p className="text-2xl font-bold text-orange-600">₹{stats?.monthlyExpenses?.toLocaleString() || 0}</p>
                     </div>
                 </div>
             </div>
@@ -169,36 +188,33 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 min-h-[400px]">
                 {/* Charts Section */}
                 <div className="card h-[400px] flex flex-col">
-                    <h3 className="font-semibold mb-4 text-lg">Cost Breakdown</h3>
+                    <h3 className="font-semibold mb-4 text-lg">Project Performance (Revenue vs Cost)</h3>
                     <div className="flex-1">
                         <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={costs}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    fill="#8884d8"
-                                    paddingAngle={5}
-                                    dataKey="total"
-                                    nameKey="_id"
-                                >
-                                    {costs.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
+                            <BarChart data={profitability} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                                <XAxis
+                                    dataKey="name"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12, fill: '#888' }}
+                                    label={{ value: 'Project Name', position: 'insideBottom', offset: -10, dy: 10, fill: '#9ca3af', fontSize: 12 }}
+                                />
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12, fill: '#888' }}
+                                    label={{ value: 'Amount (₹)', angle: -90, position: 'insideLeft', offset: 0, dy: 60, dx: -25, fill: '#9ca3af', fontSize: 12 }}
+                                />
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                    cursor={{ fill: '#f5f5f5' }}
+                                />
+                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                <Bar dataKey="revenue" name="Invoiced (Income)" fill="#10B981" radius={[4, 4, 0, 0]} barSize={30} />
+                                <Bar dataKey="cost" name="Expenses (Cost)" fill="#EF4444" radius={[4, 4, 0, 0]} barSize={30} />
+                            </BarChart>
                         </ResponsiveContainer>
-                    </div>
-                    <div className="flex justify-center gap-4 -mt-8">
-                        {costs.map((entry, index) => (
-                            <div key={index} className="flex items-center gap-1 text-xs text-secondary">
-                                <div className="w-2.5 h-2.5 rounded-full" style={{ background: COLORS[index % COLORS.length] }}></div>
-                                <span>{entry._id}</span>
-                            </div>
-                        ))}
                     </div>
                 </div>
 
@@ -230,6 +246,51 @@ export default function Dashboard() {
                             <p className="text-secondary text-sm italic text-center py-4">No insights available right now.</p>
                         )}
                     </div>
+                </div>
+            </div>
+
+            {/* Profitability Table */}
+            <div className="card mt-6">
+                <h3 className="font-semibold mb-4 text-lg">Project Profitability</h3>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-border text-secondary text-xs uppercase tracking-wider">
+                                <th className="p-3">Project</th>
+                                <th className="p-3 text-right">Invoiced (Income)</th>
+                                <th className="p-3 text-right">Expenses (Cost)</th>
+                                <th className="p-3 text-right">Net Profit</th>
+                                <th className="p-3 text-right">Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody className="text-sm">
+                            {profitability.map((p: any) => (
+                                <tr key={p.id} className="border-b border-border last:border-0 hover:bg-gray-50/50">
+                                    <td className="p-3 font-medium">{p.name}</td>
+                                    <td className="p-3 text-right text-green-600">₹{p.revenue.toLocaleString()}</td>
+                                    <td className="p-3 text-right text-red-500">₹{p.cost.toLocaleString()}</td>
+                                    <td className={`p-3 text-right font-semibold ${p.profit >= 0 ? 'text-green-700' : 'text-red-600'}`}>
+                                        {p.profit >= 0 ? '+' : ''}₹{p.profit.toLocaleString()}
+                                    </td>
+                                    <td className="p-3 text-right">
+                                        <span className={`px-2 py-1 rounded text-xs font-medium ${p.margin > 20 ? 'bg-green-100 text-green-800' :
+                                            p.margin > 0 ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-red-100 text-red-800'
+                                            }`}>
+                                            {p.margin.toFixed(1)}%
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                            {profitability.length === 0 && (
+                                <tr>
+                                    <td colSpan={5} className="p-6 text-center text-secondary italic">
+                                        No project financial data available yet.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -51,7 +51,8 @@ const InvoiceSchema: Schema = new Schema({
 
     totalAmount: { type: Number, required: true },
     status: { type: String, enum: ['draft', 'sent', 'paid'], default: 'draft' },
-    notes: { type: String }
+    notes: { type: String },
+    project: { type: Schema.Types.ObjectId, ref: 'Project' }
 }, { timestamps: true });
 
 export default mongoose.model<IInvoice>('Invoice', InvoiceSchema);

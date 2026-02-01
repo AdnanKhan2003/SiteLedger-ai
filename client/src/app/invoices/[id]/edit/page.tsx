@@ -17,6 +17,9 @@ export default function EditExpensePage() {
     const [saving, setSaving] = useState(false);
 
     const [vendorInfo, setVendorInfo] = useState({ name: '', address: '' });
+    const [projects, setProjects] = useState<any[]>([]);
+    const [selectedProjectId, setSelectedProjectId] = useState('');
+
     const [expenseData, setExpenseData] = useState({
         invoiceNumber: '',
         invoiceDate: '',
@@ -27,13 +30,19 @@ export default function EditExpensePage() {
     const [items, setItems] = useState<any[]>([]);
 
     useEffect(() => {
-        const fetchExpense = async () => {
+        const loadJava = async () => {
             if (!id) return;
             try {
-                const res = await api.get(`/expenses/${id}`);
-                const data = res.data;
+                // Fetch Expense and Projects in parallel
+                const [expenseRes, projectsRes] = await Promise.all([
+                    api.get(`/expenses/${id}`),
+                    api.get('/projects')
+                ]);
 
-                setVendorInfo({ name: data.vendor || '', address: '' }); // Address not in expense model currently, just vendor name
+                setProjects(projectsRes.data);
+
+                const data = expenseRes.data;
+                setVendorInfo({ name: data.vendor || '', address: '' });
                 setExpenseData({
                     invoiceNumber: data.invoiceNumber || '',
                     invoiceDate: data.invoiceDate ? data.invoiceDate.split('T')[0] : '',
@@ -42,21 +51,26 @@ export default function EditExpensePage() {
                     notes: data.notes || ''
                 });
 
+                // Handle project ID (it might be populated as an object or just an ID string)
+                if (data.project) {
+                    setSelectedProjectId(typeof data.project === 'object' ? data.project._id : data.project);
+                }
+
                 if (data.items && data.items.length > 0) {
                     setItems(data.items.map((i: any, idx: number) => ({ ...i, _id: i._id, id: idx + 1 })));
                 } else {
-                    // Backwards compatibility for old expenses without items
                     setItems([{ id: 1, name: 'Imported Expense', quantity: 1, price: data.totalAmount, amount: data.totalAmount }]);
                 }
+
             } catch (err: any) {
                 console.error(err);
-                showToast('Failed to load expense data', 'error');
+                showToast('Failed to load data', 'error');
                 router.push('/invoices');
             } finally {
                 setLoading(false);
             }
         };
-        fetchExpense();
+        loadJava();
     }, [id, router, showToast]);
 
     const updateItem = (id: number, field: string, value: any) => {
@@ -98,7 +112,8 @@ export default function EditExpensePage() {
                 status: expenseData.status,
                 notes: expenseData.notes,
                 items: items.map(({ id, ...rest }) => rest),
-                totalAmount: calculateTotal()
+                totalAmount: calculateTotal(),
+                project: selectedProjectId || undefined
             };
 
             await api.put(`/expenses/${id}`, payload);
@@ -194,6 +209,19 @@ export default function EditExpensePage() {
                         />
                     </div>
                     <div className="text-right w-1/3 space-y-2">
+                        <div className="flex items-center gap-2 justify-end">
+                            <label className="text-sm font-medium text-secondary">Project</label>
+                            <select
+                                className="input px-2 py-1 w-32 text-right"
+                                value={selectedProjectId}
+                                onChange={(e) => setSelectedProjectId(e.target.value)}
+                            >
+                                <option value="">-- No Project --</option>
+                                {projects.map(p => (
+                                    <option key={p._id} value={p._id}>{p.name}</option>
+                                ))}
+                            </select>
+                        </div>
                         <div className="flex items-center gap-2 justify-end">
                             <label className="text-sm font-medium text-secondary">No.</label>
                             <input

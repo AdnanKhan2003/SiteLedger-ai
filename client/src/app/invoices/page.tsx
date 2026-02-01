@@ -16,6 +16,7 @@ interface Expense {
     status: string;
     invoiceNumber: string;
     invoiceUrl: string;
+    project?: { name: string };
 }
 
 interface Invoice {
@@ -25,6 +26,7 @@ interface Invoice {
     date: string;
     totalAmount: number;
     status: string;
+    project?: { name: string };
 }
 
 export default function InvoicesPage() {
@@ -197,6 +199,7 @@ export default function InvoicesPage() {
                             <thead>
                                 <tr className="border-b border-border bg-gray-50/50">
                                     <th className="p-4 font-semibold text-secondary text-sm">Date</th>
+                                    <th className="p-4 font-semibold text-secondary text-sm">Project</th>
                                     <th className="p-4 font-semibold text-secondary text-sm">Vendor</th>
                                     <th className="p-4 font-semibold text-secondary text-sm">Category</th>
                                     <th className="p-4 font-semibold text-secondary text-sm">Amount</th>
@@ -208,6 +211,10 @@ export default function InvoicesPage() {
                                 {filteredExpenses.map((expense) => (
                                     <tr key={expense._id} className="border-b border-border last:border-0 hover:bg-gray-50/30 transition-colors">
                                         <td className="p-4 text-sm">{new Date(expense.invoiceDate).toLocaleDateString()}</td>
+                                        <td className="p-4 text-sm font-medium text-blue-600">
+                                            {/* @ts-ignore - Populate might be imperfectly typed here */}
+                                            {expense.project?.name || '-'}
+                                        </td>
                                         <td className="p-4 text-sm font-medium">{expense.vendor}</td>
                                         <td className="p-4">
                                             <span className="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full text-xs font-medium capitalize">
@@ -245,6 +252,7 @@ export default function InvoicesPage() {
                             <thead>
                                 <tr className="border-b border-border bg-gray-50/50">
                                     <th className="p-4 font-semibold text-secondary text-sm">Date</th>
+                                    <th className="p-4 font-semibold text-secondary text-sm">Project</th>
                                     <th className="p-4 font-semibold text-secondary text-sm">Invoice #</th>
                                     <th className="p-4 font-semibold text-secondary text-sm">Client</th>
                                     <th className="p-4 font-semibold text-secondary text-sm">Amount</th>
@@ -256,6 +264,10 @@ export default function InvoicesPage() {
                                 {filteredInvoices.map((inv) => (
                                     <tr key={inv._id} className="border-b border-border last:border-0 hover:bg-gray-50/30 transition-colors">
                                         <td className="p-4 text-sm">{new Date(inv.date).toLocaleDateString()}</td>
+                                        <td className="p-4 text-sm font-medium text-blue-600">
+                                            {/* @ts-ignore */}
+                                            {inv.project?.name || '-'}
+                                        </td>
                                         <td className="p-4 text-sm font-mono">{inv.invoiceNumber}</td>
                                         <td className="p-4 text-sm font-medium">{inv.clientName}</td>
                                         <td className="p-4 font-semibold">₹{inv.totalAmount}</td>

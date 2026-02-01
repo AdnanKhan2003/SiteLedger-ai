@@ -36,7 +36,7 @@ export const getExpenses = async (req: Request, res: Response) => {
             if (end) query.date.$lte = new Date(end as string);
         }
 
-        const expenses = await Expense.find(query).sort({ date: -1 });
+        const expenses = await Expense.find(query).populate('project', 'name').sort({ date: -1 });
         res.json(expenses);
     } catch (error: any) {
         res.status(500).json({ message: error.message });

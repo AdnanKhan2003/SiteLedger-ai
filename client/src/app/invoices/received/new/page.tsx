@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, Download, FileText, Save, Loader2, ArrowLeft } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -24,6 +24,21 @@ export default function NewExpensePage() {
         name: 'SideLedger Construction',
         address: '123 Business Park, Mumbai, India',
     });
+
+    const [projects, setProjects] = useState<any[]>([]);
+    const [selectedProjectId, setSelectedProjectId] = useState('');
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const res = await api.get('/projects');
+                setProjects(res.data);
+            } catch (err) {
+                console.error("Failed to fetch projects", err);
+            }
+        };
+        fetchProjects();
+    }, []);
 
     const [expenseData, setExpenseData] = useState({
         invoiceNumber: '',
@@ -82,8 +97,7 @@ export default function NewExpensePage() {
                 notes: expenseData.notes,
                 items: items.map(({ id, ...rest }) => rest),
                 totalAmount: calculateTotal(),
-                // Extra metadata could go to notes or new fields if schema changes, 
-                // but Expense schema is strict. We'll put extra info in notes if needed.
+                project: selectedProjectId || undefined
             };
 
             await api.post('/expenses', payload);
@@ -194,6 +208,20 @@ export default function NewExpensePage() {
                     </div>
                     <div className="text-right w-1/3 space-y-2">
                         <h2 className="text-2xl font-bold text-gray-400 uppercase mb-4">INVOICE</h2>
+
+                        <div className="flex items-center gap-2 justify-end">
+                            <label className="text-sm font-medium text-secondary">Project</label>
+                            <select
+                                className="input px-2 py-1 w-32 text-right"
+                                value={selectedProjectId}
+                                onChange={(e) => setSelectedProjectId(e.target.value)}
+                            >
+                                <option value="">-- No Project --</option>
+                                {projects.map(p => (
+                                    <option key={p._id} value={p._id}>{p.name}</option>
+                                ))}
+                            </select>
+                        </div>
 
                         <div className="flex items-center gap-2 justify-end">
                             <label className="text-sm font-medium text-secondary">No.</label>

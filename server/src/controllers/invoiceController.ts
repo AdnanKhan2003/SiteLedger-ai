@@ -13,7 +13,7 @@ export const createInvoice = async (req: Request, res: Response) => {
 
 export const getInvoices = async (req: Request, res: Response) => {
     try {
-        const invoices = await Invoice.find().sort({ createdAt: -1 });
+        const invoices = await Invoice.find().populate('project', 'name').sort({ createdAt: -1 });
         res.json(invoices);
     } catch (error: any) {
         res.status(500).json({ message: error.message });
@@ -22,7 +22,7 @@ export const getInvoices = async (req: Request, res: Response) => {
 
 export const getInvoiceById = async (req: Request, res: Response) => {
     try {
-        const invoice = await Invoice.findById(req.params.id);
+        const invoice = await Invoice.findById(req.params.id).populate('project', 'name');
         if (!invoice) return res.status(404).json({ message: 'Invoice not found' });
         res.json(invoice);
     } catch (error: any) {

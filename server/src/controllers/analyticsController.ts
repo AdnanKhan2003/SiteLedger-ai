@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import Project from '../models/Project';
 import User from '../models/User';
 import Expense from '../models/Expense';
@@ -19,12 +20,18 @@ export const getDashboardStats = async (req: Request, res: Response) => {
             { $group: { _id: null, total: { $sum: "$totalAmount" } } }
         ]);
 
+        const monthlyRevenue = await mongoose.model('Invoice').aggregate([
+            { $match: { date: { $gte: startOfMonth } } }, // Assuming Invoice has 'date', let's check schema if needed, but standard is 'date' or 'createdAt'
+            { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+        ]);
+
         // recent projects
         const recentProjects = await Project.find().sort({ createdAt: -1 }).limit(3);
 
         res.json({
             totalProjects,
             activeWorkers,
+            monthlyRevenue: monthlyRevenue[0]?.total || 0,
             monthlyExpenses: monthlyExpenses[0]?.total || 0,
             recentProjects
         });
@@ -69,6 +76,54 @@ export const getCostBreakdown = async (req: Request, res: Response) => {
             { $group: { _id: "$category", total: { $sum: "$totalAmount" } } }
         ]);
         res.json(breakdown);
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const getProjectProfitability = async (req: Request, res: Response) => {
+    try {
+        // 1. Get all projects
+        const projects = await Project.find({}, 'name _id status');
+
+        // 2. Aggregate Invoices (Revenue) by Project
+        const revenueMap: Record<string, number> = {};
+        const invoices = await mongoose.model('Invoice').aggregate([
+            { $match: { project: { $exists: true, $ne: null } } },
+            { $group: { _id: "$project", total: { $sum: "$totalAmount" } } }
+        ]);
+        invoices.forEach((inv: any) => {
+            if (inv._id) revenueMap[inv._id.toString()] = inv.total;
+        });
+
+        // 3. Aggregate Expenses (Cost) by Project
+        const costMap: Record<string, number> = {};
+        const expenses = await Expense.aggregate([
+            { $match: { project: { $exists: true, $ne: null } } },
+            { $group: { _id: "$project", total: { $sum: "$totalAmount" } } }
+        ]);
+        expenses.forEach((exp: any) => {
+            if (exp._id) costMap[exp._id.toString()] = exp.total;
+        });
+
+        // 4. Merge Data
+        const report = projects.map(p => {
+            const pid = p._id.toString();
+            const revenue = revenueMap[pid] || 0;
+            const cost = costMap[pid] || 0;
+            return {
+                id: pid,
+                name: p.name,
+                status: p.status,
+                revenue,
+                cost,
+                profit: revenue - cost,
+                margin: revenue > 0 ? ((revenue - cost) / revenue) * 100 : 0
+            };
+        }).sort((a, b) => b.revenue - a.revenue); // Sort by highest revenue
+
+        res.json(report);
+
     } catch (error: any) {
         res.status(500).json({ message: error.message });
     }

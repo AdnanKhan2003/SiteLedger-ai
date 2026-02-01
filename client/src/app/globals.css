@@ -100,3 +100,9 @@ body {
 .animate-scale-in {
     animation: scale-in 0.2s ease-out;
 }
+
+/* Custom Selection Color */
+::selection {
+    background-color: #383630;
+    color: #ffffff;
+}

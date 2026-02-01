@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, Download, FileText, Save, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -28,9 +28,24 @@ export default function InvoiceGenerator() {
         phone: '+91 98765 43210'
     });
 
+    const [projects, setProjects] = useState<any[]>([]);
+    const [selectedProjectId, setSelectedProjectId] = useState('');
+
     const [items, setItems] = useState([
         { id: 1, description: 'Consulting Services', quantity: 1, rate: 100, amount: 100 }
     ]);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const res = await api.get('/projects');
+                setProjects(res.data);
+            } catch (err) {
+                console.error("Failed to fetch projects", err);
+            }
+        };
+        fetchProjects();
+    }, []);
 
     const updateItem = (id: number, field: string, value: any) => {
         setItems(items.map(item => {
@@ -192,6 +207,19 @@ export default function InvoiceGenerator() {
                     <div className="text-right w-1/3">
                         <h2 className="text-4xl font-bold text-gray-100 uppercase mb-4">Invoice</h2>
                         <div className="flex flex-col gap-2 items-end">
+                            <div className="flex items-center gap-2 justify-end w-full">
+                                <label className="text-sm font-medium text-secondary whitespace-nowrap">Project</label>
+                                <select
+                                    className="input px-2 py-1 w-48 text-right bg-white"
+                                    value={selectedProjectId}
+                                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                                >
+                                    <option value="">-- No Project --</option>
+                                    {projects.map(p => (
+                                        <option key={p._id} value={p._id}>{p.name}</option>
+                                    ))}
+                                </select>
+                            </div>
                             <div className="flex items-center gap-2 justify-end w-full">
                                 <label className="text-sm font-medium text-secondary whitespace-nowrap">No.</label>
                                 <input

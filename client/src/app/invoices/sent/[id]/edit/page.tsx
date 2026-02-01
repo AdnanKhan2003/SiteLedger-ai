@@ -34,12 +34,20 @@ export default function EditInvoicePage() {
 
     const [items, setItems] = useState<any[]>([]);
 
+    const [projects, setProjects] = useState<any[]>([]);
+    const [selectedProjectId, setSelectedProjectId] = useState('');
+
     useEffect(() => {
-        const fetchInvoice = async () => {
+        const loadData = async () => {
             if (!id) return;
             try {
-                const res = await api.get(`/invoices/${id}`);
-                const data = res.data;
+                const [invoiceRes, projectsRes] = await Promise.all([
+                    api.get(`/invoices/${id}`),
+                    api.get('/projects')
+                ]);
+
+                const data = invoiceRes.data;
+                setProjects(projectsRes.data);
 
                 setInvoiceData({
                     invoiceNumber: data.invoiceNumber,
@@ -50,6 +58,11 @@ export default function EditInvoicePage() {
                     clientEmail: data.clientEmail || ''
                 });
 
+                if (data.project) {
+                    // Check if it's an object (populated) or just ID
+                    setSelectedProjectId(typeof data.project === 'object' ? data.project._id : data.project);
+                }
+
                 setCompanyInfo({
                     name: data.companyName,
                     address: data.companyAddress || '',
@@ -57,24 +70,23 @@ export default function EditInvoicePage() {
                     phone: data.companyPhone || ''
                 });
 
-                // Ensure items have IDs for internal React keys (if from DB they likely don't have 'id' purely for UI state unless we map it)
-                // DB items have _id. We can use that or generate temp ids.
+                // Ensure items have IDs for internal React keys
                 const mappedItems = data.items.map((item: any, idx: number) => ({
                     ...item,
-                    _id: item._id, // Keep original ID if needed
-                    id: idx + 1    // UI ID for keys/updates (Numbers only)
+                    _id: item._id,
+                    id: idx + 1
                 }));
                 setItems(mappedItems);
 
             } catch (err: any) {
                 console.error(err);
-                showToast('Failed to load invoice', 'error');
+                showToast('Failed to load data', 'error');
                 router.push('/invoices');
             } finally {
                 setLoading(false);
             }
         };
-        fetchInvoice();
+        loadData();
     }, [id, router, showToast]);
 
     const updateItem = (id: number, field: string, value: any) => {
@@ -120,8 +132,9 @@ export default function EditInvoicePage() {
                 companyAddress: companyInfo.address,
                 companyEmail: companyInfo.email,
                 companyPhone: companyInfo.phone,
-                items: items.map(({ id, ...rest }) => rest),
+                items: items.map(({ id, ...rest }) => rest), // remove UI ids
                 totalAmount: calculateTotal(),
+                project: selectedProjectId || undefined
             };
 
             await api.put(`/invoices/${id}`, payload);
@@ -250,6 +263,19 @@ export default function EditInvoicePage() {
                     <div className="text-right w-1/3">
                         <h2 className="text-4xl font-bold text-gray-100 uppercase mb-4">Invoice</h2>
                         <div className="flex flex-col gap-2 items-end">
+                            <div className="flex items-center gap-2 justify-end w-full">
+                                <label className="text-sm font-medium text-secondary whitespace-nowrap">Project</label>
+                                <select
+                                    className="input px-2 py-1 w-48 text-right bg-white"
+                                    value={selectedProjectId}
+                                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                                >
+                                    <option value="">-- No Project --</option>
+                                    {projects.map(p => (
+                                        <option key={p._id} value={p._id}>{p.name}</option>
+                                    ))}
+                                </select>
+                            </div>
                             <div className="flex items-center gap-2 justify-end w-full">
                                 <label className="text-sm font-medium text-secondary whitespace-nowrap">No.</label>
                                 <input
