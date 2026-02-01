@@ -5,6 +5,15 @@ export interface IUser extends Document {
     email: string;
     passwordHash: string;
     role: 'admin' | 'worker';
+
+    // Worker-specific fields (only for workers)
+    phone?: string;
+    workerRole?: string;      // e.g., "Mason", "Electrician", "Site Supervisor"
+    specialty?: string;
+    dailyRate?: number;
+    photoUrl?: string;
+    status?: 'active' | 'inactive';
+
     createdAt: Date;
 }
 
@@ -13,6 +22,15 @@ const UserSchema: Schema = new Schema({
     email: { type: String, required: true, unique: true },
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ['admin', 'worker'], default: 'worker' },
+
+    // Worker-specific fields
+    phone: { type: String },
+    workerRole: { type: String },
+    specialty: { type: String },
+    dailyRate: { type: Number },
+    photoUrl: { type: String },
+    status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+
     createdAt: { type: Date, default: Date.now }
 });
 

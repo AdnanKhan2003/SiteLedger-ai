@@ -8,7 +8,9 @@ import {
     Receipt,
     BrainCircuit,
     Settings,
-    LogOut
+    LogOut,
+    CalendarCheck,
+    UserPlus
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -16,9 +18,14 @@ const navItems = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'Projects', href: '/projects', icon: HardHat },
     { name: 'Labor', href: '/labor', icon: Users },
+    { name: 'Attendance', href: '/attendance', icon: CalendarCheck },
     { name: 'Invoices', href: '/invoices', icon: Receipt },
     { name: 'AI Insights', href: '/ai', icon: BrainCircuit },
     { name: 'Settings', href: '/settings', icon: Settings },
+];
+
+const adminOnlyItems = [
+    { name: 'Worker Register', href: '/worker-register', icon: UserPlus },
 ];
 
 import { useAuth } from '@/context/AuthContext';
@@ -73,6 +80,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         const Icon = item.icon;
                         const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
 
+                        // Hide Invoices from Labour (Worker role)
+                        if (item.name === 'Invoices' && user?.role === 'worker') return null;
+
                         return (
                             <Link
                                 key={item.href}
@@ -90,6 +100,34 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                             </Link>
                         );
                     })}
+
+                    {/* Admin-only items */}
+                    {user?.role === 'admin' && (
+                        <>
+                            <div className="border-t border-border my-2"></div>
+                            {adminOnlyItems.map((item) => {
+                                const Icon = item.icon;
+                                const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        onClick={onClose}
+                                        className={clsx(
+                                            "flex items-center gap-3 px-3 py-1.5 rounded text-sm font-medium transition-colors",
+                                            isActive
+                                                ? "bg-sidebar-hover text-foreground font-semibold"
+                                                : "text-[#5f5e5b] hover:bg-sidebar-hover hover:text-foreground"
+                                        )}
+                                    >
+                                        <Icon size={18} />
+                                        <span>{item.name}</span>
+                                    </Link>
+                                );
+                            })}
+                        </>
+                    )}
                 </nav>
 
                 {user ? (

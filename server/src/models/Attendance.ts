@@ -5,19 +5,19 @@ export interface IAttendance extends Document {
     date: Date; // Normalized to midnight or string YYYY-MM-DD
     timeIn?: Date;
     timeOut?: Date;
-    status: 'present' | 'absent' | 'half-day' | 'leave';
+    status: 'present' | 'absent' | 'half-day' | 'leave' | 'pending';
     notes?: string;
 }
 
 const AttendanceSchema: Schema = new Schema(
     {
-        worker: { type: Schema.Types.ObjectId, ref: 'Worker', required: true },
+        worker: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         date: { type: Date, required: true },
         timeIn: { type: Date },
         timeOut: { type: Date },
         status: {
             type: String,
-            enum: ['present', 'absent', 'half-day', 'leave'],
+            enum: ['present', 'absent', 'half-day', 'leave', 'pending'],
             default: 'present'
         },
         notes: { type: String },

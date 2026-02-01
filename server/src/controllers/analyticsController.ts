@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import Project from '../models/Project';
-import Worker from '../models/Worker';
+import User from '../models/User';
 import Expense from '../models/Expense';
 import Attendance from '../models/Attendance';
 
 export const getDashboardStats = async (req: Request, res: Response) => {
     try {
         const totalProjects = await Project.countDocuments();
-        const activeWorkers = await Worker.countDocuments({ status: 'active' });
+        const activeWorkers = await User.countDocuments({ role: 'worker', status: 'active' });
 
         // Calculate total expenses for current month
         const startOfMonth = new Date();
@@ -15,7 +15,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         startOfMonth.setHours(0, 0, 0, 0);
 
         const monthlyExpenses = await Expense.aggregate([
-            { $match: { date: { $gte: startOfMonth } } },
+            { $match: { invoiceDate: { $gte: startOfMonth } } },
             { $group: { _id: null, total: { $sum: "$totalAmount" } } }
         ]);
 
@@ -60,7 +60,12 @@ export const getAiInsights = async (req: Request, res: Response) => {
 
 export const getCostBreakdown = async (req: Request, res: Response) => {
     try {
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
         const breakdown = await Expense.aggregate([
+            { $match: { invoiceDate: { $gte: startOfMonth } } },
             { $group: { _id: "$category", total: { $sum: "$totalAmount" } } }
         ]);
         res.json(breakdown);

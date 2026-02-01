@@ -9,6 +9,7 @@ export interface IProject extends Document {
     endDate?: Date;
     status: 'active' | 'completed' | 'on-hold';
     description?: string;
+    workers: mongoose.Types.ObjectId[];
 }
 
 const ProjectSchema: Schema = new Schema(
@@ -25,6 +26,7 @@ const ProjectSchema: Schema = new Schema(
             default: 'active'
         },
         description: { type: String },
+        workers: [{ type: Schema.Types.ObjectId, ref: 'User' }]
     },
     { timestamps: true }
 );

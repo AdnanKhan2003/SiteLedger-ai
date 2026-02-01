@@ -1,22 +1,18 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation'; // Correct import for App Router
-import QRCode from 'qrcode'; // Check if this works client side, otherwise use 'qrcode.react' or similar, but qrcode works with canvas
+import { useRouter } from 'next/navigation';
+import QRCode from 'qrcode';
 import api from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import { ArrowLeft, Download } from 'lucide-react';
 
 export default function WorkerDetail({ params }: { params: { id: string } }) {
     const router = useRouter();
+    const { user } = useAuth();
     const [worker, setWorker] = useState<any>(null);
     const [qrUrl, setQrUrl] = useState('');
     const canvasRef = useRef<HTMLCanvasElement>(null);
-
-    // Unwrap params if it's a promise (Next.js 15 change, but 14 is sync usually. 
-    // However, in latest Next, params is sometimes treated as promise. 
-    // I will assume standard usage for now, but to be safe I'll just use params.id directly if I can, 
-    // or use React.use() if I knew the version. I'll stick to props access).
-    // Actually, typescript might complain if I don't await params if it's a promise.
-    // Standard Next.js 14: params is object.
+    const isAdmin = user?.role === 'admin';
 
     const workerId = params.id;
 
@@ -35,8 +31,6 @@ export default function WorkerDetail({ params }: { params: { id: string } }) {
 
     const generateQR = async (id: string) => {
         try {
-            // Data in QR: Just the ID or a JSON object? 
-            // For scanner, just the ID is efficient.
             const url = await QRCode.toDataURL(id);
             setQrUrl(url);
         } catch (err) {
@@ -69,11 +63,16 @@ export default function WorkerDetail({ params }: { params: { id: string } }) {
 
                     <div style={{ display: 'grid', gap: '1rem' }}>
                         <div>
-                            <strong>Phone:</strong> {worker.phone}
+                            <strong>Specialty:</strong> {worker.specialty || 'Not specified'}
                         </div>
                         <div>
-                            <strong>Daily Rate:</strong> ₹{worker.dailyRate}
+                            <strong>Phone:</strong> {worker.phone}
                         </div>
+                        {isAdmin && (
+                            <div>
+                                <strong>Daily Rate:</strong> ₹{worker.dailyRate}
+                            </div>
+                        )}
                         <div>
                             <strong>Status:</strong> {worker.status}
                         </div>

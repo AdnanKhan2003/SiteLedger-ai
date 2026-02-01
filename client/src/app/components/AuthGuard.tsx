@@ -56,7 +56,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
                 <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
                 {/* Main Content - Adjusted for mobile header and desktop sidebar */}
-                <main className="main-content flex-1 md:ml-[260px] pt-14 md:pt-0 w-full">
+                <main className="main-content flex-1 w-full">
                     {children}
                 </main>
             </div>

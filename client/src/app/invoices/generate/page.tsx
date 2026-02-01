@@ -1,10 +1,17 @@
 'use client';
 import { useState } from 'react';
-import { Plus, Trash2, Download, FileText } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Plus, Trash2, Download, FileText, Save, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import api from '@/lib/api';
+import { useToast } from '@/components/ui/Toast';
 
 export default function InvoiceGenerator() {
+    const router = useRouter();
+    const { showToast } = useToast();
+    const [saving, setSaving] = useState(false);
+
     const [invoiceData, setInvoiceData] = useState({
         invoiceNumber: 'INV-001',
         date: new Date().toISOString().split('T')[0],
@@ -14,11 +21,11 @@ export default function InvoiceGenerator() {
         clientEmail: '',
     });
 
-    const [companyInfo] = useState({
-        name: 'ABC Company',
-        address: '234 Pine Street, Boroughville, USA',
-        email: 'contact@abccompany.com',
-        phone: '+1 44 20 9789 0123'
+    const [companyInfo, setCompanyInfo] = useState({
+        name: 'SideLedger Construction',
+        address: '123 Business Park, Mumbai, India',
+        email: 'accounts@sideledger.com',
+        phone: '+91 98765 43210'
     });
 
     const [items, setItems] = useState([
@@ -30,7 +37,9 @@ export default function InvoiceGenerator() {
             if (item.id === id) {
                 const updated = { ...item, [field]: value };
                 if (field === 'quantity' || field === 'rate') {
-                    updated.amount = Number(updated.quantity) * Number(updated.rate);
+                    const qty = field === 'quantity' ? value : updated.quantity;
+                    const rate = field === 'rate' ? value : updated.rate;
+                    updated.amount = (Number(qty) || 0) * (Number(rate) || 0);
                 }
                 return updated;
             }
@@ -39,7 +48,7 @@ export default function InvoiceGenerator() {
     };
 
     const addItem = () => {
-        const newId = items.length + 1;
+        const newId = items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 1;
         setItems([...items, { id: newId, description: '', quantity: 1, rate: 0, amount: 0 }]);
     };
 
@@ -49,6 +58,36 @@ export default function InvoiceGenerator() {
 
     const calculateTotal = () => {
         return items.reduce((sum, item) => sum + item.amount, 0);
+    };
+
+    const handleSave = async () => {
+        if (!invoiceData.clientName) {
+            showToast('Client Name is required', 'error');
+            return;
+        }
+
+        setSaving(true);
+        try {
+            const payload = {
+                ...invoiceData,
+                companyName: companyInfo.name,
+                companyAddress: companyInfo.address,
+                companyEmail: companyInfo.email,
+                companyPhone: companyInfo.phone,
+                items: items.map(({ id, ...rest }) => rest), // Remove ID for DB (or keep if needed, but DB generates _id)
+                totalAmount: calculateTotal(),
+                status: 'sent'
+            };
+
+            await api.post('/invoices', payload);
+            showToast('Invoice saved successfully!', 'success');
+            router.push('/invoices'); // Go back to list, finding the "Sent" tab
+        } catch (err: any) {
+            console.error(err);
+            showToast(err.response?.data?.message || 'Failed to save invoice', 'error');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const generatePDF = () => {
@@ -108,6 +147,10 @@ export default function InvoiceGenerator() {
                     <p className="text-secondary">Create and export invoices for clients</p>
                 </div>
                 <div className="flex gap-2">
+                    <button onClick={handleSave} disabled={saving} className="btn btn-outline">
+                        {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                        Save Invoice
+                    </button>
                     <button onClick={generatePDF} className="btn btn-primary">
                         <Download size={18} /> Download PDF
                     </button>
@@ -117,25 +160,48 @@ export default function InvoiceGenerator() {
             <div className="card p-8 bg-white shadow-sm border border-border">
                 {/* Header Section */}
                 <div className="flex justify-between mb-8 border-b border-border pb-8">
-                    <div>
-                        <h2 className="text-2xl font-bold text-foreground mb-2">{companyInfo.name}</h2>
-                        <p className="text-sm text-secondary">{companyInfo.address}</p>
-                        <p className="text-sm text-secondary">{companyInfo.email}</p>
-                        <p className="text-sm text-secondary">{companyInfo.phone}</p>
+                    <div className="w-1/2 pr-4 space-y-2">
+                        <label className="text-xs text-secondary uppercase font-semibold">From (Your Company)</label>
+                        <input
+                            className="input font-bold text-lg"
+                            value={companyInfo.name}
+                            onChange={(e) => setCompanyInfo({ ...companyInfo, name: e.target.value })}
+                            placeholder="Your Company Name"
+                        />
+                        <input
+                            className="input text-sm"
+                            value={companyInfo.address}
+                            onChange={(e) => setCompanyInfo({ ...companyInfo, address: e.target.value })}
+                            placeholder="Company Address"
+                        />
+                        <div className="flex gap-2">
+                            <input
+                                className="input text-sm flex-1"
+                                value={companyInfo.email}
+                                onChange={(e) => setCompanyInfo({ ...companyInfo, email: e.target.value })}
+                                placeholder="Email"
+                            />
+                            <input
+                                className="input text-sm flex-1"
+                                value={companyInfo.phone}
+                                onChange={(e) => setCompanyInfo({ ...companyInfo, phone: e.target.value })}
+                                placeholder="Phone"
+                            />
+                        </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right w-1/3">
                         <h2 className="text-4xl font-bold text-gray-100 uppercase mb-4">Invoice</h2>
                         <div className="flex flex-col gap-2 items-end">
-                            <div className="flex items-center gap-2">
-                                <label className="text-sm font-medium text-secondary">No.</label>
+                            <div className="flex items-center gap-2 justify-end w-full">
+                                <label className="text-sm font-medium text-secondary whitespace-nowrap">No.</label>
                                 <input
                                     className="input px-2 py-1 w-32 text-right"
                                     value={invoiceData.invoiceNumber}
                                     onChange={(e) => setInvoiceData({ ...invoiceData, invoiceNumber: e.target.value })}
                                 />
                             </div>
-                            <div className="flex items-center gap-2">
-                                <label className="text-sm font-medium text-secondary">Date</label>
+                            <div className="flex items-center gap-2 justify-end w-full">
+                                <label className="text-sm font-medium text-secondary whitespace-nowrap">Date</label>
                                 <input
                                     type="date"
                                     className="input px-2 py-1 w-32 text-right"
@@ -195,16 +261,16 @@ export default function InvoiceGenerator() {
                                     type="number"
                                     className="input text-right"
                                     value={item.quantity}
-                                    onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
+                                    onChange={(e) => updateItem(item.id, 'quantity', e.target.value)}
                                 />
                                 <input
                                     type="number"
                                     className="input text-right"
                                     value={item.rate}
-                                    onChange={(e) => updateItem(item.id, 'rate', Number(e.target.value))}
+                                    onChange={(e) => updateItem(item.id, 'rate', e.target.value)}
                                 />
                                 <div className="text-right font-medium py-2">
-                                    ${item.amount.toFixed(2)}
+                                    ₹{item.amount.toFixed(2)}
                                 </div>
                                 <button
                                     onClick={() => removeItem(item.id)}
@@ -230,7 +296,7 @@ export default function InvoiceGenerator() {
                         </div>
                         <div className="flex justify-between items-center text-lg font-bold text-foreground">
                             <span>Total</span>
-                            <span>${calculateTotal().toFixed(2)}</span>
+                            <span>₹{calculateTotal().toFixed(2)}</span>
                         </div>
                     </div>
                 </div>

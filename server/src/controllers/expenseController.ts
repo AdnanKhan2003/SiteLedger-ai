@@ -43,6 +43,16 @@ export const getExpenses = async (req: Request, res: Response) => {
     }
 };
 
+export const getExpenseById = async (req: Request, res: Response) => {
+    try {
+        const expense = await Expense.findById(req.params.id).populate('project', 'name');
+        if (!expense) return res.status(404).json({ message: 'Expense not found' });
+        res.json(expense);
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 export const updateExpense = async (req: Request, res: Response) => {
     try {
         const expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });

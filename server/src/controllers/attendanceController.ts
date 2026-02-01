@@ -1,11 +1,28 @@
 import { Request, Response } from 'express';
 import Attendance from '../models/Attendance';
-import Worker from '../models/Worker';
+import User from '../models/User';
 
 // Mark attendance (Check In / Manual Entry)
 export const markAttendance = async (req: Request, res: Response) => {
     try {
-        const { workerId, date, timeIn, status, notes } = req.body;
+        const user = (req as any).user;
+        let { workerId, date, timeIn, status, notes } = req.body;
+
+        // RBAC Logic
+        if (user.role === 'worker') {
+            // Worker is marking their own attendance
+            // Use the authenticated user's ID directly
+            workerId = user.id;
+
+            // WORKER LOGIC: Default to 'pending' if they are marking themselves
+            // They cannot verify themselves.
+            status = 'pending';
+        }
+        // If Admin, they can pass any workerId and any status (Verification)
+
+        if (!workerId) {
+            return res.status(400).json({ message: 'Worker ID is required.' });
+        }
 
         // Normalize date to start of day if just string
         const attendanceDate = new Date(date);
@@ -14,9 +31,17 @@ export const markAttendance = async (req: Request, res: Response) => {
         const existing = await Attendance.findOne({ worker: workerId, date: attendanceDate });
 
         if (existing) {
-            // If exists, maybe update timeOut if not provided? Or just update fields.
+            // If exists
             if (req.body.timeOut) existing.timeOut = req.body.timeOut;
-            if (status) existing.status = status;
+
+            // Only update status if customized.
+            if (user.role === 'worker') {
+                existing.status = 'pending';
+            } else if (status) {
+                // Admin updating status
+                existing.status = status;
+            }
+
             await existing.save();
             return res.json(existing);
         }
@@ -25,6 +50,7 @@ export const markAttendance = async (req: Request, res: Response) => {
             worker: workerId,
             date: attendanceDate,
             timeIn,
+            // If worker, status is 'pending' (set above). If Admin, uses provided or 'present'.
             status: status || 'present',
             notes
         });
@@ -38,17 +64,25 @@ export const markAttendance = async (req: Request, res: Response) => {
 
 export const getAttendance = async (req: Request, res: Response) => {
     try {
+        const user = (req as any).user;
         const { date, workerId } = req.query;
         const query: any = {};
+
+        if (user.role === 'worker') {
+            // Worker can only see their own attendance
+            query.worker = user.id;
+        } else {
+            // Admin can filter
+            if (workerId) query.worker = workerId;
+        }
 
         if (date) {
             const d = new Date(date as string);
             d.setHours(0, 0, 0, 0);
             query.date = d;
         }
-        if (workerId) query.worker = workerId;
 
-        const list = await Attendance.find(query).populate('worker', 'name role');
+        const list = await Attendance.find(query).populate('worker', 'name workerRole');
         res.json(list);
     } catch (error: any) {
         res.status(500).json({ message: error.message });

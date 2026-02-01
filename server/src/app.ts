@@ -2,30 +2,47 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import workerRoutes from './routes/workerRoutes';
+
 import attendanceRoutes from './routes/attendanceRoutes';
 import expenseRoutes from './routes/expenseRoutes';
 import projectRoutes from './routes/projectRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import authRoutes from './routes/authRoutes';
+import workerAuthRoutes from './routes/workerAuthRoutes';
 import seedRoutes from './routes/seedRoutes';
+import userRoutes from './routes/userRoutes';
+import invoiceRoutes from './routes/invoiceRoutes';
 
 const app: Application = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(helmet());
 app.use(morgan('dev'));
 
+// Debug Logging
+app.use((req, res, next) => {
+    console.log(`[SERVER-INCOMING] ${req.method} ${req.url}`);
+    next();
+});
+
 // Routes
-app.use('/api/workers', workerRoutes);
+
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/worker-auth', workerAuthRoutes); // Public worker registration
 app.use('/api/test', seedRoutes);
 
 

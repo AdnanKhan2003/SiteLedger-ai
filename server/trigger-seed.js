@@ -1,21 +1,18 @@
-// Native fetch is available in Node.js v18+
 
-async function seed() {
+const axios = require('axios');
+
+const seed = async () => {
     try {
-        console.log('Triggering seed...');
-        const response = await fetch('http://localhost:5000/api/test/seed', {
-            method: 'POST'
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
+        console.log("Triggering seed...");
+        const res = await axios.post('http://localhost:5000/api/test/seed');
+        console.log("Seed Response:", res.data);
+    } catch (err) {
+        console.error("Seed Failed:", err.message);
+        if (err.response) {
+            console.error("Status:", err.response.status);
+            console.error("Data:", err.response.data);
         }
-
-        const data = await response.json();
-        console.log('Seed response:', data);
-    } catch (error) {
-        console.error('Seed failed:', error);
     }
-}
+};
 
 seed();

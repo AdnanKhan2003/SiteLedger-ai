@@ -7,6 +7,15 @@ interface User {
     id: string;
     name: string;
     email: string;
+    role: 'admin' | 'worker';
+
+    // Worker-specific fields
+    phone?: string;
+    workerRole?: string;
+    specialty?: string;
+    dailyRate?: number;
+    photoUrl?: string;
+    status?: 'active' | 'inactive';
 }
 
 interface AuthContextType {

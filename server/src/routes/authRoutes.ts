@@ -53,11 +53,27 @@ router.post('/login', async (req, res) => {
         // CREATE TOKEN
         const token = jwt.sign({ id: user._id, name: user.name, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
 
-        res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+        res.json({
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                // Worker fields (if applicable)
+                phone: user.phone,
+                workerRole: user.workerRole,
+                specialty: user.specialty,
+                dailyRate: user.dailyRate,
+                photoUrl: user.photoUrl,
+                status: user.status
+            }
+        });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 // GET ME
 router.get('/me', authenticateToken, async (req: any, res) => {

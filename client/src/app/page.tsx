@@ -6,7 +6,10 @@ import {
     DollarSign,
     AlertTriangle,
     Lightbulb,
-    TrendingUp
+    TrendingUp,
+    CalendarCheck,
+    HardHat,
+    Clock
 } from 'lucide-react';
 import {
     PieChart,
@@ -17,10 +20,13 @@ import {
 } from 'recharts';
 import { gsap } from 'gsap';
 import api from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function Dashboard() {
+    const { user } = useAuth();
     const [stats, setStats] = useState<any>(null);
     const [insights, setInsights] = useState<any[]>([]);
     const [costs, setCosts] = useState<any[]>([]);
@@ -29,23 +35,32 @@ export default function Dashboard() {
 
     useEffect(() => {
         const fetchData = async () => {
+            if (!user) return;
+
             try {
-                const [statsRes, insightsRes, costsRes] = await Promise.all([
-                    api.get('/analytics/stats'),
-                    api.get('/analytics/ai-insights'),
-                    api.get('/analytics/costs')
-                ]);
-                setStats(statsRes.data);
-                setInsights(insightsRes.data);
-                setCosts(costsRes.data);
+                if (user.role === 'admin') {
+                    // Admin Data Fetch
+                    const [statsRes, insightsRes, costsRes] = await Promise.all([
+                        api.get('/analytics/stats'),
+                        api.get('/analytics/ai-insights'),
+                        api.get('/analytics/costs')
+                    ]);
+                    setStats(statsRes.data);
+                    setInsights(insightsRes.data);
+                    setCosts(costsRes.data);
+                } else {
+                    // Worker Data Fetch (Currently just simple placeholder or user-specific logic)
+                    // We can add specific worker stats endpoints here later
+                    setLoading(false);
+                }
             } catch (err) {
-                console.error(err);
+                console.error("Dashboard fetch error:", err);
             } finally {
                 setLoading(false);
             }
         };
         fetchData();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (!loading && containerRef.current) {
@@ -56,11 +71,66 @@ export default function Dashboard() {
         }
     }, [loading]);
 
-    if (loading) return <div className="container">Loading Dashboard...</div>;
+    if (loading) return <div className="container flex justify-center items-center h-[50vh]">Loading Dashboard...</div>;
 
+    // --- WORKER DASHBOARD ---
+    if (user?.role === 'worker') {
+        return (
+            <div className="container" ref={containerRef}>
+                <header className="mb-8">
+                    <h1 className="text-3xl font-bold mb-1">Welcome, {user.name}</h1>
+                    <p className="text-secondary">Here is your work overview for today.</p>
+                </header>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div className="card bg-green-50/50 border-green-100">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                <CalendarCheck size={24} />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg">Attendance</h3>
+                                <p className="text-sm text-secondary">Mark your presence</p>
+                            </div>
+                        </div>
+                        <Link href="/attendance" className="btn btn-primary w-full justify-center">
+                            Go to Attendance
+                        </Link>
+                    </div>
+
+                    <div className="card bg-blue-50/50 border-blue-100">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                <HardHat size={24} />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg">My Projects</h3>
+                                <p className="text-sm text-secondary">View assigned sites</p>
+                            </div>
+                        </div>
+                        <Link href="/projects" className="btn btn-outline w-full justify-center bg-white">
+                            View Projects
+                        </Link>
+                    </div>
+                </div>
+
+                <div className="card">
+                    <h3 className="font-semibold mb-4 flex items-center gap-2">
+                        <Clock size={18} className="text-secondary" />
+                        Today's Schedule
+                    </h3>
+                    <p className="text-secondary text-sm italic">
+                        No specific schedule assigned for today. Please check with your supervisor.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    // --- ADMIN DASHBOARD ---
     return (
         <div className="container" ref={containerRef}>
-            <header className="mb-8">
+            <header className="mb-8 md:sticky md:top-0 md:z-10 md:bg-background/95 md:backdrop-blur md:pt-4 md:pb-4 md:-mt-4">
                 <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
                 <p className="text-secondary">Welcome back, Admin</p>
             </header>
@@ -144,8 +214,8 @@ export default function Dashboard() {
                             <div
                                 key={idx}
                                 className={`p-4 rounded border text-sm ${insight.type === 'warning' ? 'bg-red-50 text-red-700 border-red-200' :
-                                        insight.type === 'info' ? 'bg-blue-50 text-blue-800 border-blue-200' :
-                                            'bg-green-50 text-green-700 border-green-200'
+                                    insight.type === 'info' ? 'bg-blue-50 text-blue-800 border-blue-200' :
+                                        'bg-green-50 text-green-700 border-green-200'
                                     }`}
                             >
                                 <div className="flex justify-between items-center mb-2 font-semibold uppercase tracking-wide text-xs">
@@ -156,6 +226,9 @@ export default function Dashboard() {
                                 <p>{insight.text}</p>
                             </div>
                         ))}
+                        {insights.length === 0 && (
+                            <p className="text-secondary text-sm italic text-center py-4">No insights available right now.</p>
+                        )}
                     </div>
                 </div>
             </div>

@@ -34,7 +34,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <div className="card w-full max-w-md p-8 shadow-md relative z-10">
                 <div className="text-center mb-8">
                     <div className="w-10 h-10 bg-[#37352f] text-white rounded-[3px] flex items-center justify-center text-lg font-bold mx-auto mb-4">SL</div>
@@ -98,28 +98,33 @@ export default function LoginPage() {
                         onClick={() => {
                             setEmail('admin@sideledger.ai');
                             setPassword('password123');
+                            handleLogin('admin@sideledger.ai', 'password123');
                         }}
                         disabled={isLoading}
                         className="flex items-center justify-center gap-2 w-full p-2 rounded border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors text-sm font-medium"
                     >
                         <ShieldCheck size={16} />
-                        Auto-fill Admin Credentials
+                        Skip & Sign In as Admin
                     </button>
                     <button
                         onClick={() => {
                             setEmail('rahul@sideledger.ai');
                             setPassword('password123');
+                            handleLogin('rahul@sideledger.ai', 'password123');
                         }}
                         disabled={isLoading}
                         className="flex items-center justify-center gap-2 w-full p-2 rounded border border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100 transition-colors text-sm font-medium"
                     >
                         <HardHat size={16} />
-                        Auto-fill Worker Credentials
+                        Skip & Sign In as Worker
                     </button>
                 </div>
 
                 <p className="text-center mt-6 text-sm text-secondary">
                     Don't have an account? <Link href="/register" className="text-primary hover:underline">Sign up</Link>
+                </p>
+                <p className="text-center mt-2 text-sm text-secondary">
+                    Are you a worker? <Link href="/worker-register" className="text-primary hover:underline font-medium">Register here</Link>
                 </p>
             </div>
         </div>
