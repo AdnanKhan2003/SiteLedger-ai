@@ -2,12 +2,13 @@ import OpenAI from 'openai';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Only initialize OpenAI if API key is available
+const openai = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_key_here'
+    ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    : null;
 
 export const parseInvoice = async (imageUrl: string) => {
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_key_here') {
+    if (!openai) {
         console.warn('OpenAI API Key missing. Returning mock data.');
         return mockInvoiceData();
     }
