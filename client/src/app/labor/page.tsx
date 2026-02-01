@@ -141,9 +141,6 @@ export default function LaborPage() {
                             </div>
 
                             <div className="flex gap-2 mt-auto">
-                                <Link href={`/labor/${worker._id}`} className="btn btn-outline flex-1" title="View/QR">
-                                    <QrCode size={16} /> QR
-                                </Link>
                                 {isAdmin && (
                                     <>
                                         <Link href={`/labor/${worker._id}/edit`} className="btn btn-outline flex-1" title="Edit">

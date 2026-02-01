@@ -65,18 +65,20 @@ export const Modal: React.FC<ModalProps> = ({
 
                 {/* Footer */}
                 <div className="flex justify-end gap-3 p-6 border-t border-border bg-gray-50">
-                    <button
-                        onClick={onClose}
-                        className="btn btn-outline"
-                        disabled={loading}
-                    >
-                        {cancelText}
-                    </button>
+                    {cancelText && (
+                        <button
+                            onClick={onClose}
+                            className="btn btn-outline"
+                            disabled={loading}
+                        >
+                            {cancelText}
+                        </button>
+                    )}
                     <button
                         onClick={onConfirm}
                         className={`btn ${variant === 'danger'
-                                ? 'bg-red-600 text-white hover:bg-red-700'
-                                : 'btn-primary'
+                            ? 'bg-red-600 text-white hover:bg-red-700'
+                            : 'btn-primary'
                             }`}
                         disabled={loading}
                     >

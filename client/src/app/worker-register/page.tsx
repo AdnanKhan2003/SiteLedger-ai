@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
+import { Modal } from '@/components/ui/Modal';
 
 const SPECIALTIES = [
     'Carpenter',
@@ -41,6 +42,10 @@ export default function WorkerRegisterPage() {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<FormErrors>({});
     const [serverError, setServerError] = useState('');
+    const [successModal, setSuccessModal] = useState<{ open: boolean; workerName: string }>({
+        open: false,
+        workerName: ''
+    });
 
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
@@ -69,14 +74,10 @@ export default function WorkerRegisterPage() {
 
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/worker-auth/register', formData);
+            await axios.post('http://localhost:5000/api/worker-auth/register', formData);
 
-            // Store token and user data
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-
-            // Redirect to dashboard
-            router.push('/dashboard');
+            // Show success modal
+            setSuccessModal({ open: true, workerName: formData.name });
         } catch (err: any) {
             const errorMessage = err.response?.data?.message || 'Registration failed';
             setServerError(errorMessage);
@@ -224,6 +225,23 @@ export default function WorkerRegisterPage() {
                         </Link>
                     </p>
                 </form>
+
+                {/* Success Modal */}
+                <Modal
+                    isOpen={successModal.open}
+                    onClose={() => {
+                        setSuccessModal({ open: false, workerName: '' });
+                        router.push('/labor');
+                    }}
+                    onConfirm={() => {
+                        setSuccessModal({ open: false, workerName: '' });
+                        router.push('/labor');
+                    }}
+                    title="Worker Registered Successfully!"
+                    message={`${successModal.workerName} has been registered and can now log in with their credentials.`}
+                    confirmText="Go to Labor Management"
+                    cancelText=""
+                />
             </div>
         </div>
     );
