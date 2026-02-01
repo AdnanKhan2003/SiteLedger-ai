@@ -37,7 +37,7 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <div className="card w-full max-w-md p-8 shadow-md relative z-10">
                 <div className="text-center mb-8">
-                    <div className="w-10 h-10 bg-[#37352f] text-white rounded-[3px] flex items-center justify-center text-lg font-bold mx-auto mb-4">SL</div>
+                    <img src="/logo.png" alt="SideLedger AI" className="w-16 h-16 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold">Welcome back</h1>
                     <p className="text-secondary">Login to SideLedger AI</p>
                 </div>

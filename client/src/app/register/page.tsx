@@ -31,6 +31,7 @@ export default function RegisterPage() {
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <div className="card w-full max-w-md p-8 shadow-md">
                 <div className="text-center mb-8">
+                    <img src="/logo.png" alt="SideLedger AI" className="w-16 h-16 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold">Create Account</h1>
                     <p className="text-secondary">Join SideLedger AI</p>
                 </div>

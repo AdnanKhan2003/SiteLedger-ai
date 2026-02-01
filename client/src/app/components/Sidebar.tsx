@@ -59,7 +59,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             )}>
                 <div className="flex items-center justify-between mb-6 px-2">
                     <div className="flex items-center gap-2 font-semibold text-base">
-                        <div className="w-6 h-6 bg-[#37352f] text-white rounded-[3px] flex items-center justify-center text-xs">SL</div>
+                        <img src="/logo.png" alt="SideLedger AI" className="w-8 h-8" />
                         <span>SideLedger AI</span>
                     </div>
                     {/* Mobile Close Button */}
