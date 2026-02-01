@@ -55,4 +55,54 @@ router.get('/workers', authenticateToken, async (req: any, res) => {
     }
 });
 
+// GET SINGLE WORKER (for editing)
+router.get('/workers/:id', authenticateToken, async (req: any, res) => {
+    try {
+        const currentUser = await User.findById(req.user.id);
+
+        if (!currentUser || currentUser.role !== 'admin') {
+            return res.status(403).json({ error: 'Access denied. Admin only.' });
+        }
+
+        const worker = await User.findById(req.params.id).select('-passwordHash');
+
+        if (!worker) {
+            return res.status(404).json({ error: 'Worker not found' });
+        }
+
+        res.json(worker);
+    } catch (err) {
+        console.error('Error fetching worker:', err);
+        res.status(500).json({ error: 'Unable to fetch worker' });
+    }
+});
+
+// UPDATE WORKER (admin only)
+router.put('/workers/:id', authenticateToken, async (req: any, res) => {
+    try {
+        const currentUser = await User.findById(req.user.id);
+
+        if (!currentUser || currentUser.role !== 'admin') {
+            return res.status(403).json({ error: 'Access denied. Admin only.' });
+        }
+
+        const { name, phone, role, specialty, dailyRate } = req.body;
+
+        const updatedWorker = await User.findByIdAndUpdate(
+            req.params.id,
+            { name, phone, role, specialty, dailyRate },
+            { new: true, runValidators: true }
+        ).select('-passwordHash');
+
+        if (!updatedWorker) {
+            return res.status(404).json({ error: 'Worker not found' });
+        }
+
+        res.json(updatedWorker);
+    } catch (err) {
+        console.error('Error updating worker:', err);
+        res.status(500).json({ error: 'Unable to update worker' });
+    }
+});
+
 export default router;
