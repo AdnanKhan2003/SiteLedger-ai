@@ -16,11 +16,13 @@ import aiRoutes from './routes/aiRoutes';
 
 const app: Application = express();
 
+const frontendUrl = process.env.FRONTEND_URL || 'https://site-ledger-ai.vercel.app';
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', frontendUrl],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
