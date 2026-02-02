@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import {
     BrainCircuit,
@@ -24,9 +24,7 @@ export default function AIInsightsPage() {
         const fetchData = async () => {
             if (!token) return;
             try {
-                const response = await axios.get('http://localhost:5000/api/ai/insights', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.get('/ai/insights');
                 setStats(response.data.data);
                 setInsights(response.data.insights);
             } catch (error) {

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Loader2 } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 
@@ -74,7 +74,7 @@ export default function WorkerRegisterPage() {
 
         setLoading(true);
         try {
-            await axios.post('http://localhost:5000/api/worker-auth/register', formData);
+            await api.post('/worker-auth/register', formData);
 
             // Show success modal
             setSuccessModal({ open: true, workerName: formData.name });

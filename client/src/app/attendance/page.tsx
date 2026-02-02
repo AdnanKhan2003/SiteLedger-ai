@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { format } from 'date-fns';
 import { Check, X, Clock } from 'lucide-react';
 
@@ -39,9 +39,7 @@ export default function AttendancePage() {
         setLoading(true);
         try {
             // 1. Fetch Workers
-            const res = await axios.get('http://localhost:5000/api/users/workers', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/users/workers');
             const allWorkers = res.data.filter((w: Worker) => w.status === 'active');
 
             if (user?.role === 'admin') {
@@ -54,9 +52,7 @@ export default function AttendancePage() {
 
             // 2. Fetch Attendance for Date
             const queryParams = new URLSearchParams({ date: selectedDate });
-            const attRes = await axios.get(`http://localhost:5000/api/attendance?${queryParams.toString()}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const attRes = await api.get(`/attendance?${queryParams.toString()}`);
 
             // Map attendance by worker ID for easy lookup
             const map: Record<string, AttendanceRecord> = {};
@@ -75,13 +71,11 @@ export default function AttendancePage() {
 
     const markAttendance = async (workerId: string, status: 'present' | 'absent' | 'half-day' | 'leave' | 'pending') => {
         try {
-            await axios.post('http://localhost:5000/api/attendance', {
+            await api.post('/attendance', {
                 workerId,
                 date: selectedDate,
                 status,
                 timeIn: new Date()
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
             // Refresh logic
             fetchData();
