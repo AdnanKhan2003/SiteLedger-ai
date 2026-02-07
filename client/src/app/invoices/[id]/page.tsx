@@ -94,18 +94,18 @@ export default function ViewExpensePage() {
 
     return (
         <div className="container max-w-4xl py-8">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <button
                     onClick={() => router.back()}
                     className="flex items-center text-sm text-secondary hover:text-foreground transition-colors"
                 >
                     <ArrowLeft size={16} className="mr-1" /> Back to List
                 </button>
-                <div className="flex gap-2">
-                    <button onClick={() => router.push(`/invoices/${id}/edit`)} className="btn btn-outline">
+                <div className="flex gap-2 w-full md:w-auto">
+                    <button onClick={() => router.push(`/invoices/${id}/edit`)} className="btn btn-outline flex-1 md:flex-none justify-center">
                         <Pencil size={18} /> Edit
                     </button>
-                    <button onClick={generatePDF} className="btn btn-primary">
+                    <button onClick={generatePDF} className="btn btn-primary flex-1 md:flex-none justify-center">
                         <Download size={18} /> Download PDF
                     </button>
                 </div>
@@ -113,7 +113,7 @@ export default function ViewExpensePage() {
 
             <div className="card p-8 bg-white border border-border shadow-sm">
                 {/* Visual Preview */}
-                <div className="flex justify-between mb-8 border-b border-border pb-8">
+                <div className="flex flex-col md:flex-row justify-between mb-8 border-b border-border pb-8 gap-6">
                     <div>
                         <h2 className="text-2xl font-bold text-foreground mb-2">{expense.vendor}</h2>
                         <span className={`inline-block px-2 py-1 rounded text-xs font-bold uppercase ${expense.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
@@ -121,8 +121,8 @@ export default function ViewExpensePage() {
                             {expense.status}
                         </span>
                     </div>
-                    <div className="text-right">
-                        <h2 className="text-4xl font-bold text-gray-200 uppercase mb-4">INVOICE</h2>
+                    <div className="text-left md:text-right">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-200 uppercase mb-4">INVOICE</h2>
                         <p className="font-medium">#{expense.invoiceNumber || 'N/A'}</p>
                         <p className="text-sm text-secondary">Date: {new Date(expense.invoiceDate).toLocaleDateString()}</p>
                     </div>
@@ -133,29 +133,31 @@ export default function ViewExpensePage() {
                     <p className="font-bold text-lg">SideLedger Construction</p>
                 </div>
 
-                <table className="w-full text-left mb-8">
-                    <thead className="border-b border-border">
-                        <tr>
-                            <th className="py-2 text-sm font-semibold text-secondary">Item</th>
-                            <th className="py-2 text-sm font-semibold text-secondary text-right">Qty</th>
-                            <th className="py-2 text-sm font-semibold text-secondary text-right">Price</th>
-                            <th className="py-2 text-sm font-semibold text-secondary text-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {(expense.items && expense.items.length > 0 ? expense.items : [{ name: expense.category, quantity: 1, price: expense.totalAmount, amount: expense.totalAmount }]).map((item: any, idx: number) => (
-                            <tr key={idx} className="border-b border-border last:border-0">
-                                <td className="py-2">{item.name || 'Item'}</td>
-                                <td className="py-2 text-right">{item.quantity}</td>
-                                <td className="py-2 text-right">₹{item.price}</td>
-                                <td className="py-2 text-right font-medium">₹{item.amount?.toFixed(2) || expense.totalAmount}</td>
+                <div className="overflow-x-auto -mx-4 md:mx-0">
+                    <table className="w-full text-left mb-8 min-w-[600px] md:min-w-0 px-4 md:px-0">
+                        <thead className="border-b border-border">
+                            <tr>
+                                <th className="py-2 pl-4 md:pl-0 text-sm font-semibold text-secondary">Item</th>
+                                <th className="py-2 text-sm font-semibold text-secondary text-right">Qty</th>
+                                <th className="py-2 text-sm font-semibold text-secondary text-right">Price</th>
+                                <th className="py-2 pr-4 md:pr-0 text-sm font-semibold text-secondary text-right">Amount</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {(expense.items && expense.items.length > 0 ? expense.items : [{ name: expense.category, quantity: 1, price: expense.totalAmount, amount: expense.totalAmount }]).map((item: any, idx: number) => (
+                                <tr key={idx} className="border-b border-border last:border-0">
+                                    <td className="py-2 pl-4 md:pl-0">{item.name || 'Item'}</td>
+                                    <td className="py-2 text-right">{item.quantity}</td>
+                                    <td className="py-2 text-right">₹{item.price}</td>
+                                    <td className="py-2 pr-4 md:pr-0 text-right font-medium">₹{item.amount?.toFixed(2) || expense.totalAmount}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
 
                 <div className="flex justify-end">
-                    <div className="w-64 border-t border-border pt-4">
+                    <div className="w-full md:w-64 border-t border-border pt-4">
                         <div className="flex justify-between items-center text-xl font-bold text-foreground">
                             <span>Total</span>
                             <span>₹{expense.totalAmount.toFixed(2)}</span>

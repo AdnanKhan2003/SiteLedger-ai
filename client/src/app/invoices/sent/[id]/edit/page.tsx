@@ -207,7 +207,7 @@ export default function EditInvoicePage() {
 
     return (
         <div className="container max-w-4xl">
-            <header className="flex justify-between items-center mb-8">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
                     <button
                         onClick={() => router.back()}
@@ -217,12 +217,12 @@ export default function EditInvoicePage() {
                     </button>
                     <h1 className="text-3xl font-bold">Edit Invoice</h1>
                 </div>
-                <div className="flex gap-2">
-                    <button onClick={handleUpdate} disabled={saving} className="btn btn-outline">
+                <div className="flex gap-2 w-full md:w-auto">
+                    <button onClick={handleUpdate} disabled={saving} className="btn btn-outline flex-1 md:flex-none justify-center">
                         {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                         Update Invoice
                     </button>
-                    <button onClick={generatePDF} className="btn btn-primary">
+                    <button onClick={generatePDF} className="btn btn-primary flex-1 md:flex-none justify-center">
                         <Download size={18} /> Download PDF
                     </button>
                 </div>
@@ -230,22 +230,22 @@ export default function EditInvoicePage() {
 
             <div className="card p-8 bg-white shadow-sm border border-border">
                 {/* Header Section */}
-                <div className="flex justify-between mb-8 border-b border-border pb-8">
-                    <div className="w-1/2 pr-4 space-y-2">
+                <div className="flex flex-col md:flex-row justify-between mb-8 border-b border-border pb-8 gap-6">
+                    <div className="w-full md:w-1/2 pr-0 md:pr-4 space-y-2">
                         <label className="text-xs text-secondary uppercase font-semibold">From (Your Company)</label>
                         <input
-                            className="input font-bold text-lg"
+                            className="input font-bold text-lg w-full"
                             value={companyInfo.name}
                             onChange={(e) => setCompanyInfo({ ...companyInfo, name: e.target.value })}
                             placeholder="Your Company Name"
                         />
                         <input
-                            className="input text-sm"
+                            className="input text-sm w-full"
                             value={companyInfo.address}
                             onChange={(e) => setCompanyInfo({ ...companyInfo, address: e.target.value })}
                             placeholder="Company Address"
                         />
-                        <div className="flex gap-2">
+                        <div className="flex flex-col md:flex-row gap-2">
                             <input
                                 className="input text-sm flex-1"
                                 value={companyInfo.email}
@@ -260,13 +260,13 @@ export default function EditInvoicePage() {
                             />
                         </div>
                     </div>
-                    <div className="text-right w-1/3">
+                    <div className="text-left md:text-right w-full md:w-1/3">
                         <h2 className="text-4xl font-bold text-gray-100 uppercase mb-4">Invoice</h2>
-                        <div className="flex flex-col gap-2 items-end">
-                            <div className="flex items-center gap-2 justify-end w-full">
-                                <label className="text-sm font-medium text-secondary whitespace-nowrap">Project</label>
+                        <div className="flex flex-col gap-2 items-start md:items-end">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-2 justify-start md:justify-end w-full">
+                                <label className="text-sm font-medium text-secondary whitespace-nowrap w-24 md:w-auto text-left md:text-right">Project</label>
                                 <select
-                                    className="input px-2 py-1 w-48 text-right bg-white"
+                                    className="input px-2 py-1 w-full md:w-48 text-left md:text-right bg-white"
                                     value={selectedProjectId}
                                     onChange={(e) => setSelectedProjectId(e.target.value)}
                                 >
@@ -276,19 +276,19 @@ export default function EditInvoicePage() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="flex items-center gap-2 justify-end w-full">
-                                <label className="text-sm font-medium text-secondary whitespace-nowrap">No.</label>
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-2 justify-start md:justify-end w-full">
+                                <label className="text-sm font-medium text-secondary whitespace-nowrap w-24 md:w-auto text-left md:text-right">No.</label>
                                 <input
-                                    className="input px-2 py-1 w-32 text-right"
+                                    className="input px-2 py-1 w-full md:w-32 text-left md:text-right"
                                     value={invoiceData.invoiceNumber}
                                     onChange={(e) => setInvoiceData({ ...invoiceData, invoiceNumber: e.target.value })}
                                 />
                             </div>
-                            <div className="flex items-center gap-2 justify-end w-full">
-                                <label className="text-sm font-medium text-secondary whitespace-nowrap">Date</label>
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-2 justify-start md:justify-end w-full">
+                                <label className="text-sm font-medium text-secondary whitespace-nowrap w-24 md:w-auto text-left md:text-right">Date</label>
                                 <input
                                     type="date"
-                                    className="input px-2 py-1 w-32 text-right"
+                                    className="input px-2 py-1 w-full md:w-32 text-left md:text-right"
                                     value={invoiceData.date}
                                     onChange={(e) => setInvoiceData({ ...invoiceData, date: e.target.value })}
                                 />
@@ -323,64 +323,67 @@ export default function EditInvoicePage() {
                 </div>
 
                 {/* Items Table */}
-                <div className="mb-8">
-                    <div className="grid grid-cols-[3fr_1fr_1fr_1fr_40px] gap-4 mb-2 px-2 font-medium text-sm text-secondary">
-                        <span>Description</span>
-                        <span>Qty</span>
-                        <span>Rate</span>
-                        <span>Amount</span>
-                        <span></span>
-                    </div>
+                <div className="mb-8 overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0">
+                    <div className="min-w-[700px]">
+                        <div className="grid grid-cols-[3fr_1fr_1fr_1fr_40px] gap-4 mb-2 px-2 font-medium text-sm text-secondary">
+                            <span>Description</span>
+                            <span>Qty</span>
+                            <span>Rate</span>
+                            <span>Amount</span>
+                            <span></span>
+                        </div>
 
-                    <div className="space-y-2">
-                        {items.map((item) => (
-                            <div key={item.id} className="grid grid-cols-[3fr_1fr_1fr_1fr_40px] gap-4 items-center group">
-                                <input
-                                    className="input"
-                                    value={item.description}
-                                    onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                                    placeholder="Item description"
-                                />
-                                <input
-                                    type="number"
-                                    className="input text-right"
-                                    value={item.quantity}
-                                    onChange={(e) => updateItem(item.id, 'quantity', e.target.value)}
-                                />
-                                <input
-                                    type="number"
-                                    className="input text-right"
-                                    value={item.rate}
-                                    onChange={(e) => updateItem(item.id, 'rate', e.target.value)}
-                                />
-                                <div className="text-right font-medium py-2">
-                                    ₹{item.amount.toFixed(2)}
+                        <div className="space-y-2">
+                            {items.map((item) => (
+                                <div key={item.id} className="grid grid-cols-[3fr_1fr_1fr_1fr_40px] gap-4 items-center group">
+                                    <input
+                                        className="input"
+                                        value={item.description}
+                                        onChange={(e) => updateItem(item.id, 'description', e.target.value)}
+                                        placeholder="Item description"
+                                    />
+                                    <input
+                                        type="number"
+                                        className="input text-right"
+                                        value={item.quantity}
+                                        onChange={(e) => updateItem(item.id, 'quantity', e.target.value)}
+                                    />
+                                    <input
+                                        type="number"
+                                        className="input text-right"
+                                        value={item.rate}
+                                        onChange={(e) => updateItem(item.id, 'rate', e.target.value)}
+                                    />
+                                    <div className="text-right font-medium py-2">
+                                        ₹{item.amount.toFixed(2)}
+                                    </div>
+                                    <button
+                                        onClick={() => removeItem(item.id)}
+                                        className="p-2 text-gray-400 hover:text-red-500 transition-colors opacity-100 md:opacity-0 group-hover:opacity-100"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
                                 </div>
-                                <button
-                                    onClick={() => removeItem(item.id)}
-                                    className="p-2 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
 
                     <button onClick={addItem} className="btn text-primary hover:bg-blue-50 mt-4 text-sm px-0 pl-2">
                         <Plus size={16} /> Add Item
                     </button>
-                </div>
 
-                {/* Total Section */}
-                <div className="flex justify-end border-t border-border pt-4">
-                    <div className="w-64">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-secondary font-medium">Subtotal</span>
-                            <span className="font-semibold">₹{calculateTotal().toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-lg font-bold text-foreground">
-                            <span>Total</span>
-                            <span>₹{calculateTotal().toFixed(2)}</span>
+
+                    {/* Total Section */}
+                    <div className="flex justify-end border-t border-border pt-4">
+                        <div className="w-full md:w-64">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-secondary font-medium">Subtotal</span>
+                                <span className="font-semibold">₹{calculateTotal().toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-lg font-bold text-foreground">
+                                <span>Total</span>
+                                <span>₹{calculateTotal().toFixed(2)}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

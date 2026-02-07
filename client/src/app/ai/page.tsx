@@ -13,6 +13,8 @@ import {
     DollarSign,
     AlertCircle
 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function AIInsightsPage() {
     const { user, token } = useAuth();
@@ -48,16 +50,18 @@ export default function AIInsightsPage() {
 
     return (
         <div className="bg-[#F7F6F3] min-h-screen transition-all duration-300 overflow-x-hidden">
-            <div className="p-4 md:p-8 pt-20 md:pt-8 w-full space-y-8 overflow-x-hidden">
+            <div className="max-w-7xl mx-auto p-4 md:p-8 pt-20 md:pt-8 w-full space-y-6 md:space-y-8">
 
                 {/* Header */}
-                <div className="flex items-center gap-2 md:gap-3 mb-6 md:mb-8">
-                    <div className="p-2 md:p-3 bg-purple-100 rounded-lg text-purple-600">
-                        <BrainCircuit size={24} className="md:w-8 md:h-8" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#37352f] tracking-tight">AI Insights</h1>
-                        <p className="text-xs md:text-sm text-secondary">Smart analysis of your project data</p>
+                <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-3 mb-6 md:mb-8">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 md:p-3 bg-purple-100 rounded-lg text-purple-600 shrink-0">
+                            <BrainCircuit size={24} className="md:w-8 md:h-8" />
+                        </div>
+                        <div>
+                            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#37352f] tracking-tight">AI Insights</h1>
+                            <p className="text-xs md:text-sm text-secondary">Smart analysis of your project data</p>
+                        </div>
                     </div>
                 </div>
 
@@ -81,8 +85,21 @@ export default function AIInsightsPage() {
                                 <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
                                 AI Executive Summary
                             </h2>
-                            <div className="prose text-sm md:text-base text-gray-600 max-w-none whitespace-pre-line leading-relaxed break-words overflow-wrap-anywhere">
-                                {insights}
+                            <div className="prose prose-sm md:prose-base text-gray-600 max-w-none break-words overflow-wrap-anywhere">
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        // Ensure lists have proper spacing
+                                        ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-4 space-y-1" {...props} />,
+                                        ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-4 space-y-1" {...props} />,
+                                        // Ensure paragraph spacing
+                                        p: ({ node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
+                                        // Bold text styling
+                                        strong: ({ node, ...props }) => <strong className="font-semibold text-gray-900" {...props} />,
+                                    }}
+                                >
+                                    {insights}
+                                </ReactMarkdown>
                             </div>
                         </div>
 

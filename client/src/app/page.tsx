@@ -34,7 +34,6 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 export default function Dashboard() {
     const { user } = useAuth();
     const [stats, setStats] = useState<any>(null);
-    const [insights, setInsights] = useState<any[]>([]);
     const [costs, setCosts] = useState<any[]>([]);
     const [profitability, setProfitability] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -47,14 +46,12 @@ export default function Dashboard() {
             try {
                 if (user.role === 'admin') {
                     // Admin Data Fetch
-                    const [statsRes, insightsRes, costsRes, profitRes] = await Promise.all([
+                    const [statsRes, costsRes, profitRes] = await Promise.all([
                         api.get('/analytics/stats'),
-                        api.get('/analytics/ai-insights'),
                         api.get('/analytics/costs'),
                         api.get('/analytics/profitability')
                     ]);
                     setStats(statsRes.data);
-                    setInsights(insightsRes.data);
                     setCosts(costsRes.data);
                     setProfitability(profitRes.data);
                 } else {
@@ -185,7 +182,7 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 min-h-[400px]">
+            <div className="grid grid-cols-1 gap-6 min-h-[400px]">
                 {/* Charts Section */}
                 <div className="card h-[400px] flex flex-col">
                     <h3 className="font-semibold mb-4 text-lg">Project Performance (Revenue vs Cost)</h3>
@@ -215,36 +212,6 @@ export default function Dashboard() {
                                 <Bar dataKey="cost" name="Expenses (Cost)" fill="#EF4444" radius={[4, 4, 0, 0]} barSize={30} />
                             </BarChart>
                         </ResponsiveContainer>
-                    </div>
-                </div>
-
-                {/* AI Insights Section */}
-                <div className="card h-full flex flex-col">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
-                        <Lightbulb size={24} className="text-yellow-500" />
-                        <h3 className="font-semibold text-lg">AI Insights</h3>
-                    </div>
-
-                    <div className="flex flex-col gap-4 overflow-y-auto">
-                        {insights.map((insight, idx) => (
-                            <div
-                                key={idx}
-                                className={`p-4 rounded border text-sm ${insight.type === 'warning' ? 'bg-red-50 text-red-700 border-red-200' :
-                                    insight.type === 'info' ? 'bg-blue-50 text-blue-800 border-blue-200' :
-                                        'bg-green-50 text-green-700 border-green-200'
-                                    }`}
-                            >
-                                <div className="flex justify-between items-center mb-2 font-semibold uppercase tracking-wide text-xs">
-                                    <span>{insight.metric}</span>
-                                    {insight.type === 'warning' && <AlertTriangle size={14} />}
-                                    {insight.type === 'success' && <TrendingUp size={14} />}
-                                </div>
-                                <p>{insight.text}</p>
-                            </div>
-                        ))}
-                        {insights.length === 0 && (
-                            <p className="text-secondary text-sm italic text-center py-4">No insights available right now.</p>
-                        )}
                     </div>
                 </div>
             </div>

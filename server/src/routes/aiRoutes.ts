@@ -161,9 +161,19 @@ router.get('/insights', authenticateToken, async (req: any, res) => {
             const result = await model.generateContent(prompt);
             const response = await result.response;
             aiText = response.text();
-        } catch (geminiError) {
+        } catch (geminiError: any) {
             console.error("Gemini API Error:", geminiError);
-            aiText = "AI Insights are temporarily unavailable. Please check the data below.";
+
+            // Check for quota exceeded error (429 or "quota"/"limit" in message)
+            if (geminiError.status === 429 ||
+                geminiError.message?.toLowerCase().includes('quota') ||
+                geminiError.message?.toLowerCase().includes('limit') ||
+                geminiError.toString().toLowerCase().includes('quota')) {
+
+                aiText = "⚠️ **Daily AI Limit Reached**\n\nThe AI insights feature has reached its daily free usage limit. Please check back tomorrow for fresh insights!\n\n_In the meantime, you can view your raw data stats below._";
+            } else {
+                aiText = "AI Insights are temporarily unavailable. Please check the data below.";
+            }
         }
 
         res.json({
