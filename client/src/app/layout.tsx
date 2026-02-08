@@ -33,6 +33,7 @@ export const metadata: Metadata = {
         title: 'SideLedger AI - AI-Powered Construction Management',
         description: 'Streamline your construction projects with AI-powered insights, labor management, invoicing, and real-time analytics.',
         creator: '@SideLedgerAI',
+        images: ['/twitter-image.png'],
     },
 };
 
