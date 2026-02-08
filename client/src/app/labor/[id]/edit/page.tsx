@@ -61,7 +61,7 @@ export default function EditWorkerPage({ params }: { params: Promise<{ id: strin
 
         const fetchWorker = async () => {
             try {
-                const res = await api.get(`/workers/${workerId}`);
+                const res = await api.get(`/users/workers/${workerId}`);
                 const worker = res.data;
                 setFormData({
                     name: worker.name || '',
@@ -127,7 +127,7 @@ export default function EditWorkerPage({ params }: { params: Promise<{ id: strin
 
         setLoading(true);
         try {
-            await api.put(`/workers/${workerId}`, formData);
+            await api.put(`/users/workers/${workerId}`, formData);
             showToast('Worker updated successfully!', 'success');
             router.push('/labor');
         } catch (err: any) {

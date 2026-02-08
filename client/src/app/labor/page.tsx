@@ -58,7 +58,7 @@ export default function LaborPage() {
 
         setDeleting(true);
         try {
-            await api.delete(`/workers/${deleteModal.workerId}`);
+            await api.delete(`/users/workers/${deleteModal.workerId}`);
             showToast('Worker deleted successfully', 'success');
             fetchWorkers();
             closeDeleteModal();

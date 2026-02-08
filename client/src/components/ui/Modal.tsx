@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { X, AlertTriangle } from 'lucide-react';
+import { X, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface ModalProps {
     isOpen: boolean;
@@ -10,7 +10,7 @@ interface ModalProps {
     message: string;
     confirmText?: string;
     cancelText?: string;
-    variant?: 'danger' | 'warning' | 'info';
+    variant?: 'danger' | 'warning' | 'info' | 'success';
     loading?: boolean;
 }
 
@@ -47,6 +47,11 @@ export const Modal: React.FC<ModalProps> = ({
                                 <AlertTriangle className="text-red-600" size={24} />
                             </div>
                         )}
+                        {variant === 'success' && (
+                            <div className="p-2 bg-green-100 rounded-full">
+                                <CheckCircle className="text-green-600" size={24} />
+                            </div>
+                        )}
                         <h3 className="text-lg font-semibold text-foreground">{title}</h3>
                     </div>
                     <button
@@ -78,7 +83,9 @@ export const Modal: React.FC<ModalProps> = ({
                         onClick={onConfirm}
                         className={`btn ${variant === 'danger'
                             ? 'bg-red-600 text-white hover:bg-red-700'
-                            : 'btn-primary'
+                            : variant === 'success'
+                                ? 'bg-green-600 text-white hover:bg-green-700'
+                                : 'btn-primary'
                             }`}
                         disabled={loading}
                     >

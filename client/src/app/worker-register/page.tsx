@@ -241,6 +241,7 @@ export default function WorkerRegisterPage() {
                     message={`${successModal.workerName} has been registered and can now log in with their credentials.`}
                     confirmText="Go to Labor Management"
                     cancelText=""
+                    variant="success"
                 />
             </div>
         </div>

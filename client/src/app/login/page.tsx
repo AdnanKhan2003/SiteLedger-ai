@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import api from '@/lib/api';
-import { Eye, EyeOff, ShieldCheck, HardHat } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, HardHat, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -40,6 +40,13 @@ export default function LoginPage() {
                     <img src="/logo.png" alt="SideLedger AI" className="w-16 h-16 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold">Welcome back</h1>
                     <p className="text-secondary">Login to SideLedger AI</p>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-md text-sm mb-6 flex gap-2">
+                    <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
+                    <p>
+                        <strong>Note:</strong> The backend is deployed on a free tier. The first request may take up to 1 minute to wake up the server.
+                    </p>
                 </div>
 
                 {error && (

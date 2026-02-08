@@ -105,4 +105,30 @@ router.put('/workers/:id', authenticateToken, async (req: any, res) => {
     }
 });
 
+// DELETE WORKER (Soft delete - set status to inactive)
+router.delete('/workers/:id', authenticateToken, async (req: any, res) => {
+    try {
+        const currentUser = await User.findById(req.user.id);
+
+        if (!currentUser || currentUser.role !== 'admin') {
+            return res.status(403).json({ error: 'Access denied. Admin only.' });
+        }
+
+        const deletedWorker = await User.findByIdAndUpdate(
+            req.params.id,
+            { status: 'inactive' },
+            { new: true }
+        );
+
+        if (!deletedWorker) {
+            return res.status(404).json({ error: 'Worker not found' });
+        }
+
+        res.json({ message: 'Worker deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting worker:', err);
+        res.status(500).json({ error: 'Unable to delete worker' });
+    }
+});
+
 export default router;
