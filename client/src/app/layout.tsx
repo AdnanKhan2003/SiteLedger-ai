@@ -27,7 +27,7 @@ export const metadata: Metadata = {
         siteName: 'SideLedger AI',
         images: [
             {
-                url: '/opengraph-image.png',
+                url: '/opengraph-image.jpg',
                 width: 1200,
                 height: 630,
                 alt: 'SideLedger AI - Construction Management Platform',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
         title: 'SideLedger AI - AI-Powered Construction Management',
         description: 'Streamline your construction projects with AI-powered insights, labor management, invoicing, and real-time analytics.',
         creator: '@SideLedgerAI',
-        images: ['/twitter-image.png'],
+        images: ['/twitter-image.jpg'],
     },
 };
 
