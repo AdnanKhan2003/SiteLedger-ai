@@ -5,7 +5,10 @@ import AuthGuard from './components/AuthGuard';
 import { ToastProvider } from '@/components/ui/Toast';
 
 export const metadata: Metadata = {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
+    metadataBase: new URL(
+        process.env.NEXT_PUBLIC_BASE_URL ||
+        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    ),
     title: 'SideLedger AI - AI-Powered Construction Management',
     description: 'Streamline your construction projects with AI-powered insights, labor management, invoicing, and real-time analytics.',
     keywords: ['construction management', 'AI', 'project management', 'labor tracking', 'invoicing'],
@@ -22,14 +25,6 @@ export const metadata: Metadata = {
         description: 'Streamline your construction projects with AI-powered insights, labor management, invoicing, and real-time analytics.',
         url: '/',
         siteName: 'SideLedger AI',
-        images: [
-            {
-                url: '/og-image.png',
-                width: 1200,
-                height: 630,
-                alt: 'SideLedger AI - Construction Management Platform',
-            },
-        ],
         locale: 'en_US',
         type: 'website',
     },
@@ -37,7 +32,6 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'SideLedger AI - AI-Powered Construction Management',
         description: 'Streamline your construction projects with AI-powered insights, labor management, invoicing, and real-time analytics.',
-        images: ['/twitter-image.png'],
         creator: '@SideLedgerAI',
     },
 };
