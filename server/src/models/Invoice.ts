@@ -5,13 +5,13 @@ export interface IInvoice extends Document {
     date: Date;
     dueDate?: Date;
 
-    // Company Info (Sender)
+    
     companyName: string;
     companyAddress: string;
     companyEmail: string;
     companyPhone: string;
 
-    // Client Info (Receiver)
+    
     clientName: string;
     clientAddress: string;
     clientEmail: string;

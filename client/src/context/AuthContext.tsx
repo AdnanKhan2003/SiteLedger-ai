@@ -9,7 +9,7 @@ interface User {
     email: string;
     role: 'admin' | 'worker';
 
-    // Worker-specific fields
+    
     phone?: string;
     workerRole?: string;
     specialty?: string;
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
 
     useEffect(() => {
-        // Check localStorage on mount
+        
         const storedToken = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
 

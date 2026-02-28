@@ -10,7 +10,7 @@ interface Worker {
     _id: string;
     name: string;
     email?: string;
-    workerRole: string;  // Changed from 'role'
+    workerRole: string;  
     status: string;
 }
 
@@ -29,7 +29,7 @@ export default function AttendancePage() {
     const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
     const [loading, setLoading] = useState(false);
 
-    // Fetch Initial Data
+    
     useEffect(() => {
         if (!token) return;
         fetchData();
@@ -38,23 +38,23 @@ export default function AttendancePage() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            // 1. Fetch Workers
+            
             const res = await api.get('/users/workers');
             const allWorkers = res.data.filter((w: Worker) => w.status === 'active');
 
             if (user?.role === 'admin') {
                 setWorkers(allWorkers);
             } else if (user?.role === 'worker') {
-                // Match by user ID (user ID is now the worker ID)
+                
                 const me = allWorkers.find((w: Worker) => w._id === user.id);
                 setWorkers(me ? [me] : []);
             }
 
-            // 2. Fetch Attendance for Date
+            
             const queryParams = new URLSearchParams({ date: selectedDate });
             const attRes = await api.get(`/attendance?${queryParams.toString()}`);
 
-            // Map attendance by worker ID for easy lookup
+            
             const map: Record<string, AttendanceRecord> = {};
             attRes.data.forEach((rec: AttendanceRecord) => {
                 const wId = typeof rec.worker === 'string' ? rec.worker : rec.worker._id;
@@ -77,7 +77,7 @@ export default function AttendancePage() {
                 status,
                 timeIn: new Date()
             });
-            // Refresh logic
+            
             fetchData();
         } catch (err) {
             alert('Failed to mark attendance');
@@ -216,7 +216,7 @@ export default function AttendancePage() {
                                 ) : (
                                     <button
                                         className="btn btn-primary w-full py-3 text-lg justify-center"
-                                        onClick={() => markAttendance(myWorkerProfile._id, 'present')} // This will default to pending on backend
+                                        onClick={() => markAttendance(myWorkerProfile._id, 'present')} 
                                         disabled={loading}
                                     >
                                         Mark Present

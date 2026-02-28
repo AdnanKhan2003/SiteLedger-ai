@@ -76,7 +76,7 @@ export default function WorkerRegisterPage() {
         try {
             await api.post('/worker-auth/register', formData);
 
-            // Show success modal
+            
             setSuccessModal({ open: true, workerName: formData.name });
         } catch (err: any) {
             const errorMessage = err.response?.data?.message || 'Registration failed';

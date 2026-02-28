@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export const authorizeRoles = (...roles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        // user is already attached to req by authenticateToken middleware
+        
         const user = (req as any).user;
 
         if (!user || !roles.includes(user.role)) {

@@ -6,7 +6,7 @@ import { authorizeRoles } from '../middleware/authPermission';
 
 const router = express.Router();
 
-// Protect all routes
+
 router.use(authenticateToken);
 router.use(authorizeRoles('admin'));
 

@@ -59,7 +59,7 @@ export default function EditInvoicePage() {
                 });
 
                 if (data.project) {
-                    // Check if it's an object (populated) or just ID
+                    
                     setSelectedProjectId(typeof data.project === 'object' ? data.project._id : data.project);
                 }
 
@@ -70,7 +70,7 @@ export default function EditInvoicePage() {
                     phone: data.companyPhone || ''
                 });
 
-                // Ensure items have IDs for internal React keys
+                
                 const mappedItems = data.items.map((item: any, idx: number) => ({
                     ...item,
                     _id: item._id,
@@ -105,7 +105,7 @@ export default function EditInvoicePage() {
     };
 
     const addItem = () => {
-        // Ensure we find the max NUMBER id
+        
         const maxId = items.reduce((max, item) => (typeof item.id === 'number' && item.id > max ? item.id : max), 0);
         setItems([...items, { id: maxId + 1, description: '', quantity: 1, rate: 0, amount: 0 }]);
     };
@@ -151,7 +151,7 @@ export default function EditInvoicePage() {
     const generatePDF = () => {
         const doc = new jsPDF();
 
-        // Header
+        
         doc.setFontSize(22);
         doc.text(companyInfo.name, 20, 20);
         doc.setFontSize(10);
@@ -165,7 +165,7 @@ export default function EditInvoicePage() {
         doc.text(`Date: ${invoiceData.date}`, 150, 35);
         if (invoiceData.dueDate) doc.text(`Due Date: ${invoiceData.dueDate}`, 150, 40);
 
-        // Bill To
+        
         doc.text('Bill To:', 20, 50);
         doc.setFontSize(12);
         doc.text(invoiceData.clientName, 20, 55);
@@ -173,7 +173,7 @@ export default function EditInvoicePage() {
         doc.text(invoiceData.clientAddress, 20, 60);
         doc.text(invoiceData.clientEmail, 20, 65);
 
-        // Table
+        
         const tableColumn = ["Description", "Quantity", "Rate", "Amount"];
         const tableRows = items.map(item => [
             item.description,

@@ -6,9 +6,9 @@ export interface IUser extends Document {
     passwordHash: string;
     role: 'admin' | 'worker';
 
-    // Worker-specific fields (only for workers)
+    
     phone?: string;
-    workerRole?: string;      // e.g., "Mason", "Electrician", "Site Supervisor"
+    workerRole?: string;      
     specialty?: string;
     dailyRate?: number;
     photoUrl?: string;
@@ -23,7 +23,7 @@ const UserSchema: Schema = new Schema({
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ['admin', 'worker'], default: 'worker' },
 
-    // Worker-specific fields
+    
     phone: { type: String },
     workerRole: { type: String },
     specialty: { type: String },

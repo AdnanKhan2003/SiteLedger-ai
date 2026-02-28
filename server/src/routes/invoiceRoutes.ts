@@ -7,9 +7,9 @@ const router = express.Router();
 
 router.use(authenticateToken);
 
-// Assuming all authenticated users can view/create invoices for now, 
-// or restrict to admin. Following pattern of invoices/expenses being admin only?
-// User said "allow admin to change..." implies admin feature.
+
+
+
 router.use(authorizeRoles('admin'));
 
 router.post('/', createInvoice);

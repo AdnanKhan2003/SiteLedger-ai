@@ -9,7 +9,7 @@ import Invoice from '../models/Invoice';
 
 const router = express.Router();
 
-// Initialize Gemini
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
@@ -24,19 +24,19 @@ router.get('/insights', authenticateToken, async (req: any, res) => {
         let responseData = {};
 
         if (user.role === 'admin') {
-            // ADMIN LOGIC
+            
             const projects = await Project.find();
             const workers = await User.find({ role: 'worker' });
             const expenses = await Expense.find();
             const invoices = await Invoice.find();
             const attendance = await Attendance.find().populate('worker');
 
-            // 1. Overall Stats
+            
             const totalProjects = projects.length;
             const totalWorkers = workers.length;
 
-            // Calculate Profit & Expense
-            // Match Dashboard Logic: Monthly Revenue (Start of current month)
+            
+            
             const startOfMonth = new Date();
             startOfMonth.setDate(1);
             startOfMonth.setHours(0, 0, 0, 0);
@@ -51,14 +51,14 @@ router.get('/insights', authenticateToken, async (req: any, res) => {
 
             const monthlyProfit = monthlyRevenue - monthlyExpense;
 
-            // Lifetime Stats
+            
             const totalExpense = expenses.reduce((sum, exp) => sum + exp.totalAmount, 0);
             const totalRevenue = invoices
                 .filter(inv => inv.status === 'paid' || inv.status === 'sent')
                 .reduce((sum, inv) => sum + inv.totalAmount, 0);
             const totalProfit = totalRevenue - totalExpense;
 
-            // 2. Project Wise Stats
+            
             const projectStats = await Promise.all(projects.map(async (project) => {
                 const pExpenses = expenses.filter((e: any) => e.project?.toString() === project._id.toString());
                 const pInvoices = invoices.filter((i: any) => i.project?.toString() === project._id.toString());
@@ -67,11 +67,11 @@ router.get('/insights', authenticateToken, async (req: any, res) => {
                 const pRevenueTotal = pInvoices.reduce((sum, i) => sum + i.totalAmount, 0);
                 const pProfit = pRevenueTotal - pExpenseTotal;
 
-                // Workers on this project
+                
                 const pWorkers = workers.filter(w => project.workers.includes(w._id));
 
-                // Leaves per worker in this project
-                // We need to look at attendance for these workers
+                
+                
                 const workerLeaveContext = pWorkers.map(w => {
                     const leaves = attendance.filter(a =>
                         a.worker && a.worker._id.toString() === w._id.toString() &&
@@ -89,14 +89,14 @@ router.get('/insights', authenticateToken, async (req: any, res) => {
                 };
             }));
 
-            // 3. Global Leave Analysis (Workers with high leaves)
+            
             const globalLeaves = workers.map(w => {
                 const leaves = attendance.filter(a =>
                     a.worker && a.worker._id.toString() === w._id.toString() &&
                     (a.status === 'leave' || a.status === 'absent')
                 ).length;
                 return { name: w.name, leaves };
-            }).sort((a, b) => b.leaves - a.leaves).slice(0, 5); // Top 5
+            }).sort((a, b) => b.leaves - a.leaves).slice(0, 5); 
 
             promptData = {
                 role: 'admin',
@@ -119,7 +119,7 @@ router.get('/insights', authenticateToken, async (req: any, res) => {
             responseData = promptData;
 
         } else {
-            // WORKER LOGIC
+            
             const myProjects = await Project.find({ workers: user._id });
             const myAttendance = await Attendance.find({ worker: user._id });
 
@@ -141,7 +141,7 @@ router.get('/insights', authenticateToken, async (req: any, res) => {
             responseData = promptData;
         }
 
-        // Generate Insights with Gemini
+        
         let aiText = "Unable to generate insights at this time.";
         try {
             const prompt = `
@@ -164,7 +164,7 @@ router.get('/insights', authenticateToken, async (req: any, res) => {
         } catch (geminiError: any) {
             console.error("Gemini API Error:", geminiError);
 
-            // Check for quota exceeded error (429 or "quota"/"limit" in message)
+            
             if (geminiError.status === 429 ||
                 geminiError.message?.toLowerCase().includes('quota') ||
                 geminiError.message?.toLowerCase().includes('limit') ||

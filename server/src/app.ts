@@ -18,7 +18,7 @@ const app: Application = express();
 
 const frontendUrl = process.env.FRONTEND_URL || 'https://site-ledger-ai.vercel.app';
 
-// Middleware
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
@@ -30,13 +30,13 @@ app.use(cors({
 app.use(helmet());
 app.use(morgan('dev'));
 
-// Debug Logging
+
 app.use((req, res, next) => {
     console.log(`[SERVER-INCOMING] ${req.method} ${req.url}`);
     next();
 });
 
-// Routes
+
 
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/expenses', expenseRoutes);
@@ -45,7 +45,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/worker-auth', workerAuthRoutes); // Public worker registration
+app.use('/api/worker-auth', workerAuthRoutes); 
 app.use('/api/test', seedRoutes);
 app.use('/api/ai', aiRoutes);
 
@@ -56,7 +56,7 @@ app.get('/', (req: Request, res: Response) => {
     res.send('SideLedger AI API is running');
 });
 
-// Global Error Handler
+
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Server Error', error: err.message });

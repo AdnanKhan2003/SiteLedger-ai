@@ -9,7 +9,7 @@ interface Worker {
     _id: string;
     name: string;
     role: string;
-    workerRole?: string; // Specific role like "Mason"
+    workerRole?: string; 
     specialty?: string;
     status?: string;
 }
@@ -39,7 +39,7 @@ export default function NewProjectPage() {
     const [errors, setErrors] = useState<FormErrors>({});
     const [workerSearch, setWorkerSearch] = useState('');
 
-    // Filter workers based on search
+    
     const filteredWorkers = workers.filter(worker =>
         worker.name.toLowerCase().includes(workerSearch.toLowerCase()) ||
         (worker.workerRole && worker.workerRole.toLowerCase().includes(workerSearch.toLowerCase())) ||
@@ -111,7 +111,7 @@ export default function NewProjectPage() {
 
     const handleFieldChange = (field: keyof typeof formData, value: string) => {
         setFormData({ ...formData, [field]: value });
-        // Clear error when user starts typing
+        
         if (errors[field as keyof FormErrors]) {
             setErrors({ ...errors, [field]: undefined });
         }

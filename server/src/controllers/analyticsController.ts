@@ -10,7 +10,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         const totalProjects = await Project.countDocuments();
         const activeWorkers = await User.countDocuments({ role: 'worker', status: 'active' });
 
-        // Calculate total expenses for current month
+        
         const startOfMonth = new Date();
         startOfMonth.setDate(1);
         startOfMonth.setHours(0, 0, 0, 0);
@@ -25,7 +25,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
             { $group: { _id: null, total: { $sum: "$totalAmount" } } }
         ]);
 
-        // recent projects
+        
         const recentProjects = await Project.find().sort({ createdAt: -1 }).limit(3);
 
         res.json({
@@ -41,8 +41,8 @@ export const getDashboardStats = async (req: Request, res: Response) => {
 };
 
 export const getAiInsights = async (req: Request, res: Response) => {
-    // Mock AI Insights for now, as real prediction needs history data model training
-    // In a real app, send data to Python service or OpenAI with historical context
+    
+    
 
     const insights = [
         {
@@ -83,10 +83,10 @@ export const getCostBreakdown = async (req: Request, res: Response) => {
 
 export const getProjectProfitability = async (req: Request, res: Response) => {
     try {
-        // 1. Get all projects
+        
         const projects = await Project.find({}, 'name _id status');
 
-        // 2. Aggregate Invoices (Revenue) by Project
+        
         const revenueMap: Record<string, number> = {};
         const invoices = await mongoose.model('Invoice').aggregate([
             { $match: { project: { $exists: true, $ne: null } } },
@@ -96,7 +96,7 @@ export const getProjectProfitability = async (req: Request, res: Response) => {
             if (inv._id) revenueMap[inv._id.toString()] = inv.total;
         });
 
-        // 3. Aggregate Expenses (Cost) by Project
+        
         const costMap: Record<string, number> = {};
         const expenses = await Expense.aggregate([
             { $match: { project: { $exists: true, $ne: null } } },
@@ -106,7 +106,7 @@ export const getProjectProfitability = async (req: Request, res: Response) => {
             if (exp._id) costMap[exp._id.toString()] = exp.total;
         });
 
-        // 4. Merge Data
+        
         const report = projects.map(p => {
             const pid = p._id.toString();
             const revenue = revenueMap[pid] || 0;
@@ -120,7 +120,7 @@ export const getProjectProfitability = async (req: Request, res: Response) => {
                 profit: revenue - cost,
                 margin: revenue > 0 ? ((revenue - cost) / revenue) * 100 : 0
             };
-        }).sort((a, b) => b.revenue - a.revenue); // Sort by highest revenue
+        }).sort((a, b) => b.revenue - a.revenue); 
 
         res.json(report);
 

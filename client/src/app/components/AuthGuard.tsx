@@ -1,9 +1,9 @@
 'use client';
-import { useEffect, useState } from 'react'; // Added useState
+import { useEffect, useState } from 'react'; 
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Sidebar from './Sidebar';
-import { Menu } from 'lucide-react'; // Import Menu icon
+import { Menu } from 'lucide-react'; 
 
 const publicPaths = ['/login', '/register'];
 
@@ -11,7 +11,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     const { user, isLoading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar state
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
 
     useEffect(() => {
         if (!isLoading) {
@@ -33,12 +33,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         );
     }
 
-    // Public Route (Login/Register) - No Sidebar, just the page content
+    
     if (publicPaths.includes(pathname)) {
         return <>{children}</>;
     }
 
-    // Protected Route - With Sidebar and Main Content Wrapper
+    
     if (user) {
         return (
             <div className="flex flex-col md:flex-row min-h-screen">

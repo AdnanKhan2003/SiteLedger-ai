@@ -89,12 +89,12 @@ export default function AIInsightsPage() {
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     components={{
-                                        // Ensure lists have proper spacing
+                                        
                                         ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-4 space-y-1" {...props} />,
                                         ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-4 space-y-1" {...props} />,
-                                        // Ensure paragraph spacing
+                                        
                                         p: ({ node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
-                                        // Bold text styling
+                                        
                                         strong: ({ node, ...props }) => <strong className="font-semibold text-gray-900" {...props} />,
                                     }}
                                 >
@@ -266,7 +266,7 @@ export default function AIInsightsPage() {
     );
 }
 
-// Icon component
+
 function CreditCardIcon() {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

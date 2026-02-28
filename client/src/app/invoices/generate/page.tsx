@@ -96,7 +96,7 @@ export default function InvoiceGenerator() {
 
             await api.post('/invoices', payload);
             showToast('Invoice saved successfully!', 'success');
-            router.push('/invoices'); // Go back to list, finding the "Sent" tab
+            router.push('/invoices'); 
         } catch (err: any) {
             console.error(err);
             showToast(err.response?.data?.message || 'Failed to save invoice', 'error');
@@ -108,7 +108,7 @@ export default function InvoiceGenerator() {
     const generatePDF = () => {
         const doc = new jsPDF();
 
-        // Header
+        
         doc.setFontSize(22);
         doc.text(companyInfo.name, 20, 20);
         doc.setFontSize(10);
@@ -122,7 +122,7 @@ export default function InvoiceGenerator() {
         doc.text(`Date: ${invoiceData.date}`, 150, 35);
         if (invoiceData.dueDate) doc.text(`Due Date: ${invoiceData.dueDate}`, 150, 40);
 
-        // Bill To
+        
         doc.text('Bill To:', 20, 50);
         doc.setFontSize(12);
         doc.text(invoiceData.clientName, 20, 55);
@@ -130,7 +130,7 @@ export default function InvoiceGenerator() {
         doc.text(invoiceData.clientAddress, 20, 60);
         doc.text(invoiceData.clientEmail, 20, 65);
 
-        // Table
+        
         const tableColumn = ["Description", "Quantity", "Rate", "Amount"];
         const tableRows = items.map(item => [
             item.description,

@@ -36,7 +36,7 @@ interface SidebarProps {
     onClose?: () => void;
 }
 
-// ... (existing imports)
+
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const pathname = usePathname();
@@ -80,14 +80,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         const Icon = item.icon;
                         const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
 
-                        // Hide Invoices from Labour (Worker role)
+                        
                         if (item.name === 'Invoices' && user?.role === 'worker') return null;
 
                         return (
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                onClick={onClose} // Auto-close on mobile click
+                                onClick={onClose} 
                                 className={clsx(
                                     "flex items-center gap-3 px-3 py-1.5 rounded text-sm font-medium transition-colors",
                                     isActive

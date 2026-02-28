@@ -15,12 +15,12 @@ export default function ScanPage() {
             const scanner = new Html5QrcodeScanner(
                 "reader",
                 { fps: 10, qrbox: { width: 250, height: 250 } },
-        /* verbose= */ false
+         false
             );
 
             scanner.render((decodedText) => {
                 handleScan(decodedText);
-                scanner.clear(); // Stop scanning after success
+                scanner.clear(); 
             }, (error) => {
                 // console.warn(error);
             });

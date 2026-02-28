@@ -10,7 +10,7 @@ import { useToast } from '@/components/ui/Toast';
 interface Worker {
     _id: string;
     name: string;
-    workerRole: string;  // Changed from 'role'
+    workerRole: string;  
     phone: string;
     dailyRate: number;
     status: string;

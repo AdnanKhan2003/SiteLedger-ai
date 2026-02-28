@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IAttendance extends Document {
     worker: mongoose.Types.ObjectId;
-    date: Date; // Normalized to midnight or string YYYY-MM-DD
+    date: Date; 
     timeIn?: Date;
     timeOut?: Date;
     status: 'present' | 'absent' | 'half-day' | 'leave' | 'pending';
@@ -25,7 +25,7 @@ const AttendanceSchema: Schema = new Schema(
     { timestamps: true }
 );
 
-// Prevent duplicate attendance for same worker on same day
+
 AttendanceSchema.index({ worker: 1, date: 1 }, { unique: true });
 
 export default mongoose.model<IAttendance>('Attendance', AttendanceSchema);

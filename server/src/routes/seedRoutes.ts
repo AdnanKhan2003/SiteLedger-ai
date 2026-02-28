@@ -10,16 +10,16 @@ const router = express.Router();
 router.post('/seed', async (req, res) => {
     try {
         const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash('password123', salt); // Default password
+        const passwordHash = await bcrypt.hash('password123', salt); 
 
-        // 1. Clear existing Data
+        
         await Promise.all([
             User.deleteMany({}), // Clear all users
             Project.deleteMany({}),
             Expense.deleteMany({})
         ]);
 
-        // Drop workers collection if it exists
+        
         try {
             if (mongoose.connection.db) {
                 await mongoose.connection.db.dropCollection('workers');
@@ -29,8 +29,8 @@ router.post('/seed', async (req, res) => {
             // Ignore if collection doesn't exist
         }
 
-        // 2. Create Users (Admin & Workers)
-        // Admin
+        
+        
         const adminUser = new User({
             name: 'Aditya Verma',
             email: 'admin@sideledger.ai',
@@ -39,7 +39,7 @@ router.post('/seed', async (req, res) => {
         });
         await adminUser.save();
 
-        // 3. Create Workers (Single User Collection)
+        
         const workerData = [
             { name: "Rahul Sharma", email: "rahul@sideledger.ai", workerRole: "Site Supervisor", phone: "9876543220", dailyRate: 1200, status: "active" },
             { name: "Vikram Singh", email: "vikram@sideledger.ai", workerRole: "Mason", phone: "9876543221", dailyRate: 850, status: "active" },
@@ -75,7 +75,7 @@ router.post('/seed', async (req, res) => {
             createdUsers.push(user);
         }
 
-        // 4. Create Projects
+        
         const projectData = [
             {
                 name: "Sunshine Apartments",
@@ -100,7 +100,7 @@ router.post('/seed', async (req, res) => {
         const projects = await Project.insertMany(projectData);
         createdProjects.push(...projects);
 
-        // 5. Create Expenses
+        
         const expenseData = [
             {
                 vendor: "UltraTech Cement",

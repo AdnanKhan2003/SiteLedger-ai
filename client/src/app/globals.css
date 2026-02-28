@@ -20,7 +20,7 @@ body {
     @apply text-foreground bg-background font-sans antialiased overflow-x-hidden;
 }
 
-/* Custom Utilities */
+
 @layer components {
     .btn {
         @apply inline-flex items-center justify-center px-3 py-2 rounded font-medium transition-colors gap-2 text-sm border border-transparent;
@@ -44,7 +44,7 @@ body {
     }
 }
 
-/* Custom Container */
+
 .container {
     @apply mx-auto px-4 w-full max-w-7xl;
 }
@@ -53,7 +53,7 @@ body {
     @apply ml-0 md:ml-[260px] min-h-screen bg-background px-4 pb-4 pt-24 md:p-8 transition-all duration-300;
 }
 
-/* Toast Animation */
+
 @keyframes slide-in {
     from {
         transform: translateX(100%);
@@ -70,7 +70,7 @@ body {
     animation: slide-in 0.3s ease-out;
 }
 
-/* Modal Animations */
+
 @keyframes fade-in {
     from {
         opacity: 0;
@@ -101,7 +101,7 @@ body {
     animation: scale-in 0.2s ease-out;
 }
 
-/* Custom Selection Color */
+
 ::selection {
     background-color: #383630;
     color: #ffffff;

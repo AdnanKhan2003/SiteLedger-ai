@@ -39,7 +39,7 @@ export default function InvoicesPage() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('');
 
-    // Delete state
+    
     const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string | null; name: string; type: 'expense' | 'invoice' }>({
         isOpen: false,
         id: null,
@@ -63,7 +63,7 @@ export default function InvoicesPage() {
                 const res = await api.get('/expenses');
                 setExpenses(res.data);
             } else {
-                const res = await api.get('/invoices'); // Outgoing invoices
+                const res = await api.get('/invoices'); 
                 setInvoices(res.data);
             }
         } catch (err) {

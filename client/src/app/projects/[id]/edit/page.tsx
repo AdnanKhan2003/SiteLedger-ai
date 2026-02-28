@@ -9,7 +9,7 @@ interface Worker {
     _id: string;
     name: string;
     role: string;
-    workerRole?: string; // Specific role like "Mason"
+    workerRole?: string; 
     specialty?: string;
     status?: string;
 }
@@ -43,7 +43,7 @@ export default function EditProjectPage() {
     const [errors, setErrors] = useState<FormErrors>({});
     const [workerSearch, setWorkerSearch] = useState('');
 
-    // Filter workers based on search
+    
     const filteredWorkers = workers.filter(worker =>
         worker.name.toLowerCase().includes(workerSearch.toLowerCase()) ||
         (worker.workerRole && worker.workerRole.toLowerCase().includes(workerSearch.toLowerCase())) ||
@@ -54,7 +54,7 @@ export default function EditProjectPage() {
         const fetchData = async () => {
             if (!id) return;
             try {
-                // Fetch Project
+                
                 const pRes = await api.get(`/projects/${id}`);
                 const p = pRes.data;
                 setFormData({
@@ -66,13 +66,13 @@ export default function EditProjectPage() {
                     description: p.description || ''
                 });
 
-                // Pre-select workers
+                
                 if (p.workers && p.workers.length > 0) {
                     const wIds = p.workers.map((w: any) => typeof w === 'string' ? w : w._id);
                     setSelectedWorkers(wIds);
                 }
 
-                // Fetch Workers
+                
                 const wRes = await api.get('/users/workers');
                 setWorkers(wRes.data.filter((w: any) => w.status === 'active'));
 
@@ -139,7 +139,7 @@ export default function EditProjectPage() {
 
     const handleFieldChange = (field: keyof typeof formData, value: string) => {
         setFormData({ ...formData, [field]: value });
-        // Clear error when user starts typing
+        
         if (errors[field as keyof FormErrors]) {
             setErrors({ ...errors, [field]: undefined });
         }

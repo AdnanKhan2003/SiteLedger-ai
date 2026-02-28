@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Only initialize OpenAI if API key is available
+
 const openai = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_key_here'
     ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     : null;
@@ -34,7 +34,7 @@ export const parseInvoice = async (imageUrl: string) => {
         });
 
         const content = response.choices[0].message.content;
-        // Basic cleaning of markdown code blocks if present
+        
         const jsonStr = content?.replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(jsonStr || '{}');
     } catch (error) {

@@ -12,14 +12,14 @@ export default function NewExpensePage() {
     const { showToast } = useToast();
     const [saving, setSaving] = useState(false);
 
-    // "From" the Vendor
+    
     const [vendorInfo, setVendorInfo] = useState({
         name: '',
         address: '',
         gstin: '',
     });
 
-    // "To" Us
+    
     const [myInfo, setMyInfo] = useState({
         name: 'SideLedger Construction',
         address: '123 Business Park, Mumbai, India',
@@ -114,12 +114,12 @@ export default function NewExpensePage() {
     const generatePDF = () => {
         const doc = new jsPDF();
 
-        // Header - Received Invoice is FROM Vendor
+        
         doc.setFontSize(22);
         doc.text(vendorInfo.name || 'Vendor Name', 20, 20);
         doc.setFontSize(10);
         doc.text(vendorInfo.address || '', 20, 30);
-        // doc.text(`GSTIN: ${vendorInfo.gstin}`, 20, 35);
+        
 
         doc.setFontSize(16);
         doc.text('INVOICE (RECEIVED)', 140, 20);
@@ -127,14 +127,14 @@ export default function NewExpensePage() {
         doc.text(`Invoice #: ${expenseData.invoiceNumber}`, 140, 30);
         doc.text(`Date: ${expenseData.date}`, 140, 35);
 
-        // Bill To (Us)
+        
         doc.text('Bill To:', 20, 50);
         doc.setFontSize(12);
         doc.text(myInfo.name, 20, 55);
         doc.setFontSize(10);
         doc.text(myInfo.address, 20, 60);
 
-        // Table
+        
         const tableColumn = ["Item", "Quantity", "Price", "Amount"];
         const tableRows = items.map(item => [
             item.name,

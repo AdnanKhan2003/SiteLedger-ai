@@ -33,7 +33,7 @@ export default function EditExpensePage() {
         const loadJava = async () => {
             if (!id) return;
             try {
-                // Fetch Expense and Projects in parallel
+                
                 const [expenseRes, projectsRes] = await Promise.all([
                     api.get(`/expenses/${id}`),
                     api.get('/projects')
@@ -51,7 +51,7 @@ export default function EditExpensePage() {
                     notes: data.notes || ''
                 });
 
-                // Handle project ID (it might be populated as an object or just an ID string)
+                
                 if (data.project) {
                     setSelectedProjectId(typeof data.project === 'object' ? data.project._id : data.project);
                 }
@@ -118,7 +118,7 @@ export default function EditExpensePage() {
 
             await api.put(`/expenses/${id}`, payload);
             showToast('Expense updated successfully', 'success');
-            router.push(`/invoices/${id}`); // Go back to View
+            router.push(`/invoices/${id}`); 
         } catch (err: any) {
             console.error(err);
             const msg = err.response?.data?.message || 'Failed to update expense';
@@ -140,7 +140,7 @@ export default function EditExpensePage() {
         doc.text(`Invoice #: ${expenseData.invoiceNumber}`, 140, 30);
         doc.text(`Date: ${expenseData.invoiceDate}`, 140, 35);
 
-        // Table
+        
         const tableColumn = ["Item", "Quantity", "Price", "Amount"];
         const tableRows = items.map(item => [
             item.name,

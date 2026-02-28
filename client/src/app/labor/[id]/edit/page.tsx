@@ -44,7 +44,7 @@ export default function EditWorkerPage({ params }: { params: Promise<{ id: strin
     const [fetchingWorker, setFetchingWorker] = useState(true);
     const [errors, setErrors] = useState<FormErrors>({});
 
-    // Protect route - admin only
+    
     useEffect(() => {
         if (user && user.role !== 'admin') {
             showToast('Access denied. Admin only.', 'error');
@@ -52,9 +52,9 @@ export default function EditWorkerPage({ params }: { params: Promise<{ id: strin
         }
     }, [user, router, showToast]);
 
-    // Fetch worker data
+    
     useEffect(() => {
-        // Only fetch if user is loaded and is admin
+        
         if (!user) return;
         if (user.role !== 'admin') return;
         if (!workerId) return;
@@ -72,7 +72,7 @@ export default function EditWorkerPage({ params }: { params: Promise<{ id: strin
                 });
             } catch (err: any) {
                 console.error('Error fetching worker:', err);
-                // User-friendly error message
+                
                 showToast('Unable to load worker information. Please try again.', 'error');
                 router.push('/labor');
             } finally {
@@ -111,7 +111,7 @@ export default function EditWorkerPage({ params }: { params: Promise<{ id: strin
 
     const handleFieldChange = (field: keyof typeof formData, value: string) => {
         setFormData({ ...formData, [field]: value });
-        // Clear error when user starts typing
+        
         if (errors[field as keyof FormErrors]) {
             setErrors({ ...errors, [field]: undefined });
         }
@@ -132,7 +132,7 @@ export default function EditWorkerPage({ params }: { params: Promise<{ id: strin
             router.push('/labor');
         } catch (err: any) {
             console.error('Error updating worker:', err);
-            // User-friendly error message
+            
             showToast('Unable to update worker. Please check your information and try again.', 'error');
         } finally {
             setLoading(false);

@@ -10,7 +10,7 @@ export interface IExpense extends Document {
         amount: number;
     }>;
     category: 'materials' | 'labor' | 'equipment' | 'miscellaneous';
-    subCategory?: string; // e.g., cement, steel
+    subCategory?: string; 
     totalAmount: number;
     totalGst: number;
     invoiceNumber?: string;
@@ -19,7 +19,7 @@ export interface IExpense extends Document {
     status: 'pending' | 'paid';
     paymentDate?: Date;
     notes?: string;
-    project?: mongoose.Types.ObjectId; // Link to project
+    project?: mongoose.Types.ObjectId; 
 }
 
 const ExpenseSchema: Schema = new Schema(

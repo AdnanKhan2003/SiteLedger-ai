@@ -45,7 +45,7 @@ export default function Dashboard() {
 
             try {
                 if (user.role === 'admin') {
-                    // Admin Data Fetch
+                    
                     const [statsRes, costsRes, profitRes] = await Promise.all([
                         api.get('/analytics/stats'),
                         api.get('/analytics/costs'),
@@ -55,8 +55,8 @@ export default function Dashboard() {
                     setCosts(costsRes.data);
                     setProfitability(profitRes.data);
                 } else {
-                    // Worker Data Fetch (Currently just simple placeholder or user-specific logic)
-                    // We can add specific worker stats endpoints here later
+                    
+                    
                     setLoading(false);
                 }
             } catch (err) {
@@ -79,7 +79,7 @@ export default function Dashboard() {
 
     if (loading) return <div className="container flex justify-center items-center h-[50vh]">Loading Dashboard...</div>;
 
-    // --- WORKER DASHBOARD ---
+    
     if (user?.role === 'worker') {
         return (
             <div className="container" ref={containerRef}>
@@ -133,7 +133,7 @@ export default function Dashboard() {
         );
     }
 
-    // --- ADMIN DASHBOARD ---
+    
     return (
         <div className="container" ref={containerRef}>
             <header className="mb-8 md:sticky md:top-0 md:z-10 md:bg-background/95 md:backdrop-blur md:pt-4 md:pb-4 md:-mt-4">

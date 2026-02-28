@@ -36,7 +36,7 @@ export default function ViewInvoicePage() {
         if (!invoice) return;
         const doc = new jsPDF();
 
-        // Header
+        
         doc.setFontSize(22);
         doc.text(invoice.companyName, 20, 20);
         doc.setFontSize(10);
@@ -50,7 +50,7 @@ export default function ViewInvoicePage() {
         doc.text(`Date: ${new Date(invoice.date).toLocaleDateString()}`, 150, 35);
         if (invoice.dueDate) doc.text(`Due Date: ${new Date(invoice.dueDate).toLocaleDateString()}`, 150, 40);
 
-        // Bill To
+        
         doc.text('Bill To:', 20, 50);
         doc.setFontSize(12);
         doc.text(invoice.clientName, 20, 55);
@@ -58,7 +58,7 @@ export default function ViewInvoicePage() {
         doc.text(invoice.clientAddress || '', 20, 60);
         doc.text(invoice.clientEmail || '', 20, 65);
 
-        // Table
+        
         const tableColumn = ["Description", "Quantity", "Rate", "Amount"];
         const tableRows = invoice.items.map((item: any) => [
             item.description,
