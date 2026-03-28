@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import redis from '../lib/redis';
+import redis, { isRedisConnected } from '../lib/redis';
 import asyncHandler from '../lib/asyncHandler';
 import APIResponse from '../lib/APIResponse';
 
@@ -20,12 +20,16 @@ export const getHealth = asyncHandler(async (req: Request, res: Response) => {
     }
 
     try {
-        const redisStatus = await redis.ping();
-        if (redisStatus === 'PONG') {
-            healthData.checks.redis = 'UP';
+        if (redis && isRedisConnected) {
+            const redisStatus = await redis.ping();
+            if (redisStatus === 'PONG') {
+                healthData.checks.redis = 'UP';
+            }
+        } else {
+            healthData.checks.redis = 'DOWN (Disconnected)';
         }
     } catch (err) {
-        healthData.checks.redis = 'DOWN';
+        healthData.checks.redis = 'DOWN (Error)';
     }
 
     if (healthData.checks.database === 'DOWN' || healthData.checks.redis === 'DOWN') {

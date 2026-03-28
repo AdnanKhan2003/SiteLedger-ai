@@ -16,15 +16,15 @@ import healthRoutes from './routes/healthRoutes';
 import errorHandler from './middleware/errorHandler';
 import notFound from './middleware/notFound';
 
-const app: Application = express();
+import { FRONTEND_URL } from './constants/env';
 
-const frontendUrl = process.env.FRONTEND_URL || 'https://site-ledger-ai.vercel.app';
+const app: Application = express();
 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', frontendUrl],
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', FRONTEND_URL],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']

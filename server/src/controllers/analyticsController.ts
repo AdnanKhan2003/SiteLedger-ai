@@ -6,12 +6,12 @@ import Expense from "../models/Expense";
 import Attendance from "../models/Attendance";
 import asyncHandler from "../lib/asyncHandler";
 import APIResponse from "../lib/APIResponse";
-import redis from "../lib/redis";
+import redis, { isRedisConnected } from "../lib/redis";
 
 export const getDashboardStats = asyncHandler(
   async (req: Request, res: Response) => {
     const cacheKey = "dashboard:stats";
-    const cachedData = await redis.get(cacheKey);
+    const cachedData = (redis && isRedisConnected) ? await redis.get(cacheKey) : null;
     if (cachedData) {
       return res.json(
         new APIResponse(
@@ -56,7 +56,9 @@ export const getDashboardStats = asyncHandler(
       recentProjects,
     };
 
-    await redis.setex(cacheKey, 600, JSON.stringify(result));
+    if (redis && isRedisConnected) {
+        await redis.setex(cacheKey, 600, JSON.stringify(result));
+    }
 
     res.json(
       new APIResponse(
@@ -74,7 +76,7 @@ export const getCostBreakdown = asyncHandler(
     const isMonthly = period === 'month';
     const cacheKey = isMonthly ? "analytics:costs:month" : "analytics:costs:alltime";
     
-    const cachedData = await redis.get(cacheKey);
+    const cachedData = (redis && isRedisConnected) ? await redis.get(cacheKey) : null;
     if (cachedData) {
       return res.json(
         new APIResponse(
@@ -98,7 +100,9 @@ export const getCostBreakdown = asyncHandler(
       { $group: { _id: "$category", total: { $sum: "$totalAmount" } } },
     ]);
 
-    await redis.setex(cacheKey, 600, JSON.stringify(breakdown));
+    if (redis && isRedisConnected) {
+        await redis.setex(cacheKey, 600, JSON.stringify(breakdown));
+    }
 
     res.json(
       new APIResponse(200, breakdown, "Cost breakdown fetched successfully"),
@@ -109,7 +113,7 @@ export const getCostBreakdown = asyncHandler(
 export const getProjectProfitability = asyncHandler(
   async (req: Request, res: Response) => {
     const cacheKey = "analytics:profitability";
-    const cachedData = await redis.get(cacheKey);
+    const cachedData = (redis && isRedisConnected) ? await redis.get(cacheKey) : null;
     if (cachedData) {
       return res.json(
         new APIResponse(
@@ -159,7 +163,9 @@ export const getProjectProfitability = asyncHandler(
       })
       .sort((a, b) => b.revenue - a.revenue);
 
-    await redis.setex(cacheKey, 600, JSON.stringify(report)); // 10 minutes cache
+    if (redis && isRedisConnected) {
+        await redis.setex(cacheKey, 600, JSON.stringify(report)); // 10 minutes cache
+    }
 
     res.json(
       new APIResponse(
