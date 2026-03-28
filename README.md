@@ -4,8 +4,9 @@ SideLedger AI is a next-generation construction management platform designed to 
 
 ---
 
-## 🎥 Video Demo Link
-> https://adnankhan-dev.netlify.app/projects/site-ledger-ai
+## 🎥 Demo 
+> Demo: https://site-ledger-ai.vercel.app/ \
+> Video: https://adnankhan-dev.netlify.app/projects/site-ledger-ai
 
 ---
 
