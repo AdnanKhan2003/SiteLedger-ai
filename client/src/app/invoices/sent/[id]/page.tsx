@@ -112,7 +112,6 @@ export default function ViewInvoicePage() {
             </div>
 
             <div className="card p-8 bg-white border border-border shadow-sm print:shadow-none print:border-0">
-                {/* Visual Preview (HTML version of PDF) */}
                 <div className="flex flex-col md:flex-row justify-between mb-8 border-b border-border pb-8 gap-6">
                     <div>
                         <h2 className="text-2xl font-bold text-foreground mb-2">{invoice.companyName}</h2>

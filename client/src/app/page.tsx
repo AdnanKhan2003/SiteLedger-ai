@@ -36,8 +36,27 @@ export default function Dashboard() {
     const [stats, setStats] = useState<any>(null);
     const [costs, setCosts] = useState<any[]>([]);
     const [profitability, setProfitability] = useState<any[]>([]);
+    const [costPeriod, setCostPeriod] = useState('all');
     const [loading, setLoading] = useState(true);
+    const [fetchingCosts, setFetchingCosts] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const fetchCosts = async () => {
+            setFetchingCosts(true);
+            try {
+                const res = await api.get(`/analytics/costs?period=${costPeriod}`);
+                setCosts(res.data);
+            } catch (err) {
+                console.error("Error fetching costs:", err);
+            } finally {
+                setFetchingCosts(false);
+            }
+        };
+        if (user?.role === 'admin' && !loading) {
+            fetchCosts();
+        }
+    }, [costPeriod, user, loading]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,18 +64,13 @@ export default function Dashboard() {
 
             try {
                 if (user.role === 'admin') {
-                    
-                    const [statsRes, costsRes, profitRes] = await Promise.all([
+                    const [statsRes, profitRes] = await Promise.all([
                         api.get('/analytics/stats'),
-                        api.get('/analytics/costs'),
                         api.get('/analytics/profitability')
                     ]);
                     setStats(statsRes.data);
-                    setCosts(costsRes.data);
                     setProfitability(profitRes.data);
                 } else {
-                    
-                    
                     setLoading(false);
                 }
             } catch (err) {
@@ -133,7 +147,6 @@ export default function Dashboard() {
         );
     }
 
-    
     return (
         <div className="container" ref={containerRef}>
             <header className="mb-8 md:sticky md:top-0 md:z-10 md:bg-background/95 md:backdrop-blur md:pt-4 md:pb-4 md:-mt-4">
@@ -141,50 +154,47 @@ export default function Dashboard() {
                 <p className="text-secondary">Welcome back, Admin</p>
             </header>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div className="card flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-blue-50 text-blue-600">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-8">
+                <div className="card flex items-center gap-4 p-4 md:p-6">
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-blue-50 text-blue-600 shrink-0">
                         <Briefcase size={24} />
                     </div>
-                    <div>
-                        <h3 className="font-semibold text-secondary text-sm">Total Projects</h3>
-                        <p className="text-2xl font-bold">{stats?.totalProjects || 0}</p>
+                    <div className="min-w-0">
+                        <h3 className="font-semibold text-secondary text-xs md:text-sm">Total Projects</h3>
+                        <p className="text-xl md:text-2xl font-bold">{stats?.totalProjects || 0}</p>
                     </div>
                 </div>
-                <div className="card flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-green-50 text-green-600">
+                <div className="card flex items-center gap-4 p-4 md:p-6">
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-green-50 text-green-600 shrink-0">
                         <Users size={24} />
                     </div>
-                    <div>
-                        <h3 className="font-semibold text-secondary text-sm">Active Workers</h3>
-                        <p className="text-2xl font-bold">{stats?.activeWorkers || 0}</p>
+                    <div className="min-w-0">
+                        <h3 className="font-semibold text-secondary text-xs md:text-sm">Active Workers</h3>
+                        <p className="text-xl md:text-2xl font-bold">{stats?.activeWorkers || 0}</p>
                     </div>
                 </div>
-                {/* Revenue Card */}
-                <div className="card flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600">
+                <div className="card flex items-center gap-4 p-4 md:p-6">
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600 shrink-0">
                         <TrendingUp size={24} />
                     </div>
-                    <div>
-                        <h3 className="font-semibold text-secondary text-sm">Revenue (Month)</h3>
-                        <p className="text-2xl font-bold text-emerald-600">₹{stats?.monthlyRevenue?.toLocaleString() || 0}</p>
+                    <div className="min-w-0">
+                        <h3 className="font-semibold text-secondary text-xs md:text-sm">Revenue (Month)</h3>
+                        <p className="text-xl md:text-2xl font-bold text-emerald-600">₹{stats?.monthlyRevenue?.toLocaleString() || 0}</p>
                     </div>
                 </div>
-                <div className="card flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-orange-50 text-orange-600">
+                <div className="card flex items-center gap-4 p-4 md:p-6">
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-orange-50 text-orange-600 shrink-0">
                         <DollarSign size={24} />
                     </div>
-                    <div>
-                        <h3 className="font-semibold text-secondary text-sm">Expenses (Month)</h3>
-                        <p className="text-2xl font-bold text-orange-600">₹{stats?.monthlyExpenses?.toLocaleString() || 0}</p>
+                    <div className="min-w-0">
+                        <h3 className="font-semibold text-secondary text-xs md:text-sm">Expenses (Month)</h3>
+                        <p className="text-xl md:text-2xl font-bold text-orange-600">₹{stats?.monthlyExpenses?.toLocaleString() || 0}</p>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 min-h-[400px]">
-                {/* Charts Section */}
-                <div className="card h-[400px] flex flex-col">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="card h-[400px] flex flex-col lg:col-span-2">
                     <h3 className="font-semibold mb-4 text-lg">Project Performance (Revenue vs Cost)</h3>
                     <div className="flex-1">
                         <ResponsiveContainer width="100%" height="100%">
@@ -214,9 +224,62 @@ export default function Dashboard() {
                         </ResponsiveContainer>
                     </div>
                 </div>
+
+                <div className="card h-[400px] flex flex-col relative overflow-hidden">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                        <h3 className="font-semibold text-base md:text-lg whitespace-nowrap">Cost Breakdown</h3>
+                        <div className="flex bg-gray-100 p-1 rounded-lg text-[10px] font-bold shrink-0">
+                            <button 
+                                onClick={() => setCostPeriod('all')}
+                                className={`px-2 py-1 rounded-md transition-all ${costPeriod === 'all' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'}`}
+                            >
+                                ALL
+                            </button>
+                            <button 
+                                onClick={() => setCostPeriod('month')}
+                                className={`px-2 py-1 rounded-md transition-all ${costPeriod === 'month' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'}`}
+                            >
+                                MONTH
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className={`flex-1 transition-opacity duration-300 ${fetchingCosts ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+                        {costs.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={costs}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="total"
+                                        nameKey="_id"
+                                    >
+                                        {costs.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="flex-1 flex items-center justify-center text-secondary italic text-sm">
+                                No expenses recorded {costPeriod === 'month' ? 'this month' : 'yet'}
+                            </div>
+                        )}
+                    </div>
+                    {fetchingCosts && (
+                        <div className="absolute inset-0 flex items-center justify-center z-10">
+                            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    )}
+                </div>
             </div>
 
-            {/* Profitability Table */}
             <div className="card mt-6">
                 <h3 className="font-semibold mb-4 text-lg">Project Profitability</h3>
                 <div className="overflow-x-auto">

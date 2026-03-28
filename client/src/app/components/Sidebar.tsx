@@ -44,7 +44,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     return (
         <>
-            {/* Mobile Overlay */}
             <div
                 className={clsx(
                     "fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity",
@@ -62,7 +61,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         <img src="/logo.png" alt="SideLedger AI" className="w-8 h-8" />
                         <span>SideLedger AI</span>
                     </div>
-                    {/* Mobile Close Button */}
                     <button onClick={onClose} className="md:hidden text-secondary hover:text-foreground">
                         <X size={20} />
                     </button>
@@ -80,14 +78,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         const Icon = item.icon;
                         const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
 
-                        
+
                         if (item.name === 'Invoices' && user?.role === 'worker') return null;
 
                         return (
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                onClick={onClose} 
+                                onClick={onClose}
                                 className={clsx(
                                     "flex items-center gap-3 px-3 py-1.5 rounded text-sm font-medium transition-colors",
                                     isActive
@@ -101,7 +99,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         );
                     })}
 
-                    {/* Admin-only items */}
                     {user?.role === 'admin' && (
                         <>
                             <div className="border-t border-border my-2"></div>

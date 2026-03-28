@@ -31,7 +31,7 @@ export default function AIInsightsPage() {
                 setInsights(response.data.insights);
             } catch (error) {
                 console.error("Error fetching AI insights:", error);
-                setInsights("Failed to load insights. Please try again later.");
+                setInsights("Strategic insights are temporarily unavailable. You can still view your project data below.");
             } finally {
                 setLoading(false);
             }
@@ -49,10 +49,9 @@ export default function AIInsightsPage() {
     };
 
     return (
-        <div className="bg-[#F7F6F3] min-h-screen transition-all duration-300 overflow-x-hidden">
+        <div className="bg-white min-h-screen transition-all duration-300 overflow-x-hidden">
             <div className="max-w-7xl mx-auto p-4 md:p-8 pt-20 md:pt-8 w-full space-y-6 md:space-y-8">
 
-                {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-3 mb-6 md:mb-8">
                     <div className="flex items-center gap-3">
                         <div className="p-2 md:p-3 bg-purple-100 rounded-lg text-purple-600 shrink-0">
@@ -76,7 +75,6 @@ export default function AIInsightsPage() {
                     </div>
                 ) : (
                     <>
-                        {/* AI Summary Card */}
                         <div className="bg-white p-4 md:p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-5 hidden md:block">
                                 <BrainCircuit size={120} />
@@ -89,12 +87,12 @@ export default function AIInsightsPage() {
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     components={{
-                                        
+
                                         ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-4 space-y-1" {...props} />,
                                         ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-4 space-y-1" {...props} />,
-                                        
+
                                         p: ({ node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
-                                        
+
                                         strong: ({ node, ...props }) => <strong className="font-semibold text-gray-900" {...props} />,
                                     }}
                                 >
@@ -103,10 +101,8 @@ export default function AIInsightsPage() {
                             </div>
                         </div>
 
-                        {/* Admin View */}
                         {user?.role === 'admin' && stats && (
                             <>
-                                {/* Key Metrics Grid */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                                     <div className="bg-white p-4 md:p-5 rounded-xl border border-gray-100 shadow-sm">
                                         <div className="flex justify-between items-start mb-2">
@@ -152,7 +148,6 @@ export default function AIInsightsPage() {
                                     </div>
                                 </div>
 
-                                {/* Project Wise Breakdown */}
                                 <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                                     <div className="p-4 md:p-6 border-b border-gray-100 bg-gray-50/50">
                                         <h3 className="font-semibold text-gray-800 text-sm md:text-base">Project Performance</h3>

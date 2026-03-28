@@ -89,14 +89,14 @@ export default function InvoiceGenerator() {
                 companyAddress: companyInfo.address,
                 companyEmail: companyInfo.email,
                 companyPhone: companyInfo.phone,
-                items: items.map(({ id, ...rest }) => rest), // Remove ID for DB (or keep if needed, but DB generates _id)
+                items: items.map(({ id, ...rest }) => rest),
                 totalAmount: calculateTotal(),
                 status: 'sent'
             };
 
             await api.post('/invoices', payload);
             showToast('Invoice saved successfully!', 'success');
-            router.push('/invoices'); 
+            router.push('/invoices');
         } catch (err: any) {
             console.error(err);
             showToast(err.response?.data?.message || 'Failed to save invoice', 'error');
@@ -108,7 +108,7 @@ export default function InvoiceGenerator() {
     const generatePDF = () => {
         const doc = new jsPDF();
 
-        
+
         doc.setFontSize(22);
         doc.text(companyInfo.name, 20, 20);
         doc.setFontSize(10);
@@ -122,7 +122,7 @@ export default function InvoiceGenerator() {
         doc.text(`Date: ${invoiceData.date}`, 150, 35);
         if (invoiceData.dueDate) doc.text(`Due Date: ${invoiceData.dueDate}`, 150, 40);
 
-        
+
         doc.text('Bill To:', 20, 50);
         doc.setFontSize(12);
         doc.text(invoiceData.clientName, 20, 55);
@@ -130,7 +130,7 @@ export default function InvoiceGenerator() {
         doc.text(invoiceData.clientAddress, 20, 60);
         doc.text(invoiceData.clientEmail, 20, 65);
 
-        
+
         const tableColumn = ["Description", "Quantity", "Rate", "Amount"];
         const tableRows = items.map(item => [
             item.description,
@@ -173,7 +173,6 @@ export default function InvoiceGenerator() {
             </header>
 
             <div className="card p-8 bg-white shadow-sm border border-border">
-                {/* Header Section */}
                 <div className="flex justify-between mb-8 border-b border-border pb-8">
                     <div className="w-1/2 pr-4 space-y-2">
                         <label className="text-xs text-secondary uppercase font-semibold">From (Your Company)</label>
@@ -241,7 +240,6 @@ export default function InvoiceGenerator() {
                     </div>
                 </div>
 
-                {/* Bill To Section */}
                 <div className="mb-8 p-4 bg-gray-50 rounded border border-border/50">
                     <h3 className="text-sm font-semibold uppercase text-secondary mb-3">Bill To</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -266,7 +264,6 @@ export default function InvoiceGenerator() {
                     </div>
                 </div>
 
-                {/* Items Table */}
                 <div className="mb-8">
                     <div className="grid grid-cols-[3fr_1fr_1fr_1fr_40px] gap-4 mb-2 px-2 font-medium text-sm text-secondary">
                         <span>Description</span>
@@ -315,7 +312,6 @@ export default function InvoiceGenerator() {
                     </button>
                 </div>
 
-                {/* Total Section */}
                 <div className="flex justify-end border-t border-border pt-4">
                     <div className="w-64">
                         <div className="flex justify-between items-center mb-2">

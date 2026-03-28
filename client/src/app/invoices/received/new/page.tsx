@@ -12,14 +12,14 @@ export default function NewExpensePage() {
     const { showToast } = useToast();
     const [saving, setSaving] = useState(false);
 
-    
+
     const [vendorInfo, setVendorInfo] = useState({
         name: '',
         address: '',
         gstin: '',
     });
 
-    
+
     const [myInfo, setMyInfo] = useState({
         name: 'SideLedger Construction',
         address: '123 Business Park, Mumbai, India',
@@ -114,12 +114,12 @@ export default function NewExpensePage() {
     const generatePDF = () => {
         const doc = new jsPDF();
 
-        
+
         doc.setFontSize(22);
         doc.text(vendorInfo.name || 'Vendor Name', 20, 20);
         doc.setFontSize(10);
         doc.text(vendorInfo.address || '', 20, 30);
-        
+
 
         doc.setFontSize(16);
         doc.text('INVOICE (RECEIVED)', 140, 20);
@@ -127,14 +127,14 @@ export default function NewExpensePage() {
         doc.text(`Invoice #: ${expenseData.invoiceNumber}`, 140, 30);
         doc.text(`Date: ${expenseData.date}`, 140, 35);
 
-        
+
         doc.text('Bill To:', 20, 50);
         doc.setFontSize(12);
         doc.text(myInfo.name, 20, 55);
         doc.setFontSize(10);
         doc.text(myInfo.address, 20, 60);
 
-        
+
         const tableColumn = ["Item", "Quantity", "Price", "Amount"];
         const tableRows = items.map(item => [
             item.name,
@@ -334,10 +334,9 @@ export default function NewExpensePage() {
                     </button>
                 </div>
 
-                {/* Total Section */}
-                <div className="flex justify-end border-t border-border pt-4">
+
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
                     <div className="w-64">
-                        {/* Optional Notes */}
                         <div className="mb-4">
                             <label className="text-xs text-secondary block mb-1">Notes</label>
                             <textarea

@@ -132,14 +132,14 @@ export default function EditInvoicePage() {
                 companyAddress: companyInfo.address,
                 companyEmail: companyInfo.email,
                 companyPhone: companyInfo.phone,
-                items: items.map(({ id, ...rest }) => rest), // remove UI ids
+                items: items.map(({ id, ...rest }) => rest),
                 totalAmount: calculateTotal(),
                 project: selectedProjectId || undefined
             };
 
             await api.put(`/invoices/${id}`, payload);
             showToast('Invoice updated successfully!', 'success');
-            // router.push('/invoices'); // Or stay? User asked to edit changes. Usually nice to go back or show success.
+            router.push('/invoices');
         } catch (err: any) {
             console.error(err);
             showToast(err.response?.data?.message || 'Failed to update invoice', 'error');
@@ -229,8 +229,7 @@ export default function EditInvoicePage() {
             </header>
 
             <div className="card p-8 bg-white shadow-sm border border-border">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between mb-8 border-b border-border pb-8 gap-6">
+                <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8 pb-8 border-b border-border">
                     <div className="w-full md:w-1/2 pr-0 md:pr-4 space-y-2">
                         <label className="text-xs text-secondary uppercase font-semibold">From (Your Company)</label>
                         <input
@@ -297,8 +296,7 @@ export default function EditInvoicePage() {
                     </div>
                 </div>
 
-                {/* Bill To Section */}
-                <div className="mb-8 p-4 bg-gray-50 rounded border border-border/50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 p-4 bg-gray-50 rounded border border-border/50">
                     <h3 className="text-sm font-semibold uppercase text-secondary mb-3">Bill To</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input
@@ -322,8 +320,7 @@ export default function EditInvoicePage() {
                     </div>
                 </div>
 
-                {/* Items Table */}
-                <div className="mb-8 overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0">
+                <div className="overflow-x-auto mb-8">
                     <div className="min-w-[700px]">
                         <div className="grid grid-cols-[3fr_1fr_1fr_1fr_40px] gap-4 mb-2 px-2 font-medium text-sm text-secondary">
                             <span>Description</span>
@@ -372,8 +369,6 @@ export default function EditInvoicePage() {
                         <Plus size={16} /> Add Item
                     </button>
 
-
-                    {/* Total Section */}
                     <div className="flex justify-end border-t border-border pt-4">
                         <div className="w-full md:w-64">
                             <div className="flex justify-between items-center mb-2">

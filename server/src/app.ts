@@ -8,11 +8,13 @@ import expenseRoutes from './routes/expenseRoutes';
 import projectRoutes from './routes/projectRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import authRoutes from './routes/authRoutes';
-import workerAuthRoutes from './routes/workerAuthRoutes';
-import seedRoutes from './routes/seedRoutes';
+
 import userRoutes from './routes/userRoutes';
 import invoiceRoutes from './routes/invoiceRoutes';
 import aiRoutes from './routes/aiRoutes';
+import healthRoutes from './routes/healthRoutes';
+import errorHandler from './middleware/errorHandler';
+import notFound from './middleware/notFound';
 
 const app: Application = express();
 
@@ -45,9 +47,9 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/worker-auth', workerAuthRoutes); 
-app.use('/api/test', seedRoutes);
+
 app.use('/api/ai', aiRoutes);
+app.use('/api/health', healthRoutes);
 
 
 
@@ -57,9 +59,17 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Server Error', error: err.message });
-});
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;
+
+process.on('unhandledRejection', (err: any) => {
+    console.error(`[UNHANDLED REJECTION] ${err.message}`);
+    process.exit(1);
+});
+
+process.on('uncaughtException', (err: any) => {
+    console.error(`[UNCAUGHT EXCEPTION] ${err.message}`);
+    process.exit(1);
+});

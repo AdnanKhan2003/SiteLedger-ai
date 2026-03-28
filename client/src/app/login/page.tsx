@@ -13,7 +13,6 @@ export default function LoginPage() {
     const { login } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
-    
     const handleLogin = async (emailToUse: string, passwordToUse: string) => {
         setError('');
         setIsLoading(true);
@@ -70,7 +69,7 @@ export default function LoginPage() {
                         <label className="block text-sm font-medium mb-1">Password</label>
                         <div className="relative">
                             <input
-                                type={showPassword ? "text" : "password"} 
+                                type={showPassword ? "text" : "password"}
                                 className="input pr-10"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}

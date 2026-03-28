@@ -196,7 +196,6 @@ export default function EditExpensePage() {
             </header>
 
             <div className="card p-8 bg-white shadow-sm border border-border">
-                {/* Header Edit Section */}
                 <div className="flex flex-col md:flex-row justify-between mb-8 border-b border-border pb-8 gap-6">
                     <div className="w-full md:w-1/2 pr-0 md:pr-4 space-y-2">
                         <label className="text-xs text-secondary uppercase font-semibold">From (Supplier/Vendor)</label>

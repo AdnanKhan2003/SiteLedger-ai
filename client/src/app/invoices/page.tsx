@@ -121,12 +121,14 @@ export default function InvoicesPage() {
 
     const filteredExpenses = expenses.filter(e =>
         e.vendor.toLowerCase().includes(filter.toLowerCase()) ||
-        e.category.toLowerCase().includes(filter.toLowerCase())
+        e.category.toLowerCase().includes(filter.toLowerCase()) ||
+        (e.project?.name?.toLowerCase() || '').includes(filter.toLowerCase())
     );
 
     const filteredInvoices = invoices.filter(i =>
         i.clientName.toLowerCase().includes(filter.toLowerCase()) ||
-        i.invoiceNumber.toLowerCase().includes(filter.toLowerCase())
+        i.invoiceNumber.toLowerCase().includes(filter.toLowerCase()) ||
+        (i.project?.name?.toLowerCase() || '').includes(filter.toLowerCase())
     );
 
     return (
@@ -146,7 +148,6 @@ export default function InvoicesPage() {
                 </div>
             </header>
 
-            {/* Tabs */}
             <div className="flex border-b border-border mb-6">
                 <button
                     onClick={() => setActiveTab('expenses')}
@@ -173,7 +174,7 @@ export default function InvoicesPage() {
                     <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary" />
                     <input
                         className="input pl-10"
-                        placeholder={activeTab === 'expenses' ? "Search vendor..." : "Search client or invoice #..."}
+                        placeholder={activeTab === 'expenses' ? "Search vendor, category or project..." : "Search client, invoice # or project..."}
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                     />

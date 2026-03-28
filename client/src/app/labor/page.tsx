@@ -86,7 +86,6 @@ export default function LaborPage() {
                 )}
             </header>
 
-            {/* Info Banner for Admin */}
             {isAdmin && (
                 <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex gap-3">
                     <Info size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
@@ -160,7 +159,6 @@ export default function LaborPage() {
                 </div>
             )}
 
-            {/* Delete Confirmation Modal */}
             <Modal
                 isOpen={deleteModal.open}
                 onClose={closeDeleteModal}

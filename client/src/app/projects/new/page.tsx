@@ -192,8 +192,7 @@ export default function NewProjectPage() {
                 <div className="mb-6">
                     <label className="block mb-2 font-medium text-secondary text-sm">Assign Team</label>
 
-                    {/* Search Input */}
-                    <div className="relative mb-2">
+                    <div className="relative mb-4">
                         <input
                             type="text"
                             placeholder="Search workers by name or role..."

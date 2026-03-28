@@ -10,7 +10,7 @@ interface Worker {
     _id: string;
     name: string;
     email?: string;
-    workerRole: string;  
+    workerRole: string;
     status: string;
 }
 
@@ -29,7 +29,7 @@ export default function AttendancePage() {
     const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
     const [loading, setLoading] = useState(false);
 
-    
+
     useEffect(() => {
         if (!token) return;
         fetchData();
@@ -38,23 +38,23 @@ export default function AttendancePage() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            
+
             const res = await api.get('/users/workers');
             const allWorkers = res.data.filter((w: Worker) => w.status === 'active');
 
             if (user?.role === 'admin') {
                 setWorkers(allWorkers);
             } else if (user?.role === 'worker') {
-                
+
                 const me = allWorkers.find((w: Worker) => w._id === user.id);
                 setWorkers(me ? [me] : []);
             }
 
-            
+
             const queryParams = new URLSearchParams({ date: selectedDate });
             const attRes = await api.get(`/attendance?${queryParams.toString()}`);
 
-            
+
             const map: Record<string, AttendanceRecord> = {};
             attRes.data.forEach((rec: AttendanceRecord) => {
                 const wId = typeof rec.worker === 'string' ? rec.worker : rec.worker._id;
@@ -77,7 +77,7 @@ export default function AttendancePage() {
                 status,
                 timeIn: new Date()
             });
-            
+
             fetchData();
         } catch (err) {
             alert('Failed to mark attendance');
@@ -99,8 +99,7 @@ export default function AttendancePage() {
                 {user.role === 'worker' && <p className="text-xs text-secondary mt-1">Attendance must be verified by Admin.</p>}
             </header>
 
-            {/* Admin View */}
-            {user.role === 'admin' && (
+            {user?.role === 'admin' ? (
                 <div className="card">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-semibold">Worker Attendance</h2>
@@ -185,42 +184,71 @@ export default function AttendancePage() {
                         </table>
                     </div>
                 </div>
-            )}
-
-            {/* Worker View */}
-            {user.role === 'worker' && (
+            ) : (
                 <div className="max-w-md mx-auto mt-10">
-                    <div className="card text-center p-8">
-                        <div className="mb-6">
-                            <h2 className="text-2xl font-bold mb-2">{format(new Date(), 'EEEE, MMMM do')}</h2>
-                            <p className="text-secondary">Mark your attendance for today</p>
+                    <div className="card p-8">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-semibold">My Attendance</h2>
+                            <input
+                                type="date"
+                                className="input w-auto text-sm"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="text-center mb-6">
+                            <h3 className="text-lg font-bold mb-1">
+                                {format(new Date(selectedDate + 'T00:00:00'), 'EEEE, MMMM do')}
+                            </h3>
+                            <p className="text-secondary text-sm">
+                                {selectedDate === format(new Date(), 'yyyy-MM-dd')
+                                    ? "Mark your attendance for today"
+                                    : "Status for selected date"}
+                            </p>
                         </div>
 
                         {myWorkerProfile ? (
                             <div className="space-y-4">
-                                <div className="p-4 bg-muted/30 rounded-lg">
-                                    <p className="text-sm text-secondary mb-2">Current Status</p>
-                                    <div className={`text-xl font-semibold capitalize ${attendanceMap[myWorkerProfile._id]?.status === 'pending' ? 'text-orange-600' : ''}`}>
+                                <div className="p-4 bg-muted/30 rounded-lg text-center">
+                                    <p className="text-sm text-secondary mb-2">Status</p>
+                                    <div className={`text-xl font-semibold capitalize 
+                                        ${attendanceMap[myWorkerProfile._id]?.status === 'pending' ? 'text-orange-600' :
+                                            attendanceMap[myWorkerProfile._id]?.status === 'present' ? 'text-green-600' :
+                                                attendanceMap[myWorkerProfile._id]?.status === 'absent' ? 'text-red-600' :
+                                                    attendanceMap[myWorkerProfile._id]?.status === 'half-day' ? 'text-yellow-600' :
+                                                        'text-gray-400'}`}>
                                         {attendanceMap[myWorkerProfile._id]?.status === 'pending' ? 'Pending Approval' : (attendanceMap[myWorkerProfile._id]?.status || 'Not Marked')}
                                     </div>
+                                    {attendanceMap[myWorkerProfile._id]?.timeIn && (
+                                        <p className="text-xs text-secondary mt-2 flex items-center justify-center gap-1">
+                                            <Clock size={12} /> Marked at: {format(new Date(attendanceMap[myWorkerProfile._id].timeIn || ''), 'hh:mm a')}
+                                        </p>
+                                    )}
                                 </div>
 
-                                {attendanceMap[myWorkerProfile._id]?.status ? (
-                                    <button
-                                        className={`btn w-full py-3 text-lg justify-center cursor-default pointer-events-none
-                                            ${attendanceMap[myWorkerProfile._id]?.status === 'pending' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}
-                                        `}
-                                    >
-                                        {attendanceMap[myWorkerProfile._id]?.status === 'pending' ? 'Waiting for Admin Verification' : `Marked as ${attendanceMap[myWorkerProfile._id]?.status}`}
-                                    </button>
+                                {selectedDate === format(new Date(), 'yyyy-MM-dd') ? (
+                                    attendanceMap[myWorkerProfile._id]?.status ? (
+                                        <div className={`p-4 rounded-lg text-center text-sm font-medium
+                                            ${attendanceMap[myWorkerProfile._id]?.status === 'pending' ? 'bg-orange-50 text-orange-700' : 'bg-green-50 text-green-700'}
+                                        `}>
+                                            {attendanceMap[myWorkerProfile._id]?.status === 'pending'
+                                                ? 'Waiting for Admin Verification'
+                                                : `Successfully marked as ${attendanceMap[myWorkerProfile._id]?.status}`}
+                                        </div>
+                                    ) : (
+                                        <button
+                                            className="btn btn-primary w-full py-3 text-lg justify-center"
+                                            onClick={() => markAttendance(myWorkerProfile._id, 'present')}
+                                            disabled={loading}
+                                        >
+                                            Mark Present
+                                        </button>
+                                    )
                                 ) : (
-                                    <button
-                                        className="btn btn-primary w-full py-3 text-lg justify-center"
-                                        onClick={() => markAttendance(myWorkerProfile._id, 'present')} 
-                                        disabled={loading}
-                                    >
-                                        Mark Present
-                                    </button>
+                                    <p className="text-center text-sm text-secondary italic">
+                                        Attendance marking is only available for the current day.
+                                    </p>
                                 )}
                             </div>
                         ) : (

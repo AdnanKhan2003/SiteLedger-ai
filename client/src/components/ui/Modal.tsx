@@ -39,8 +39,7 @@ export const Modal: React.FC<ModalProps> = ({
             onClick={handleBackdropClick}
         >
             <div className="bg-white rounded-lg shadow-2xl max-w-md w-full mx-4 animate-scale-in">
-                {/* Header */}
-                <div className="flex items-start justify-between p-6 border-b border-border">
+                <div className="flex items-center justify-between p-4 border-b border-border">
                     <div className="flex items-center gap-3">
                         {variant === 'danger' && (
                             <div className="p-2 bg-red-100 rounded-full">
@@ -63,13 +62,11 @@ export const Modal: React.FC<ModalProps> = ({
                     </button>
                 </div>
 
-                {/* Body */}
-                <div className="p-6">
+                <div className="p-4 overflow-y-auto max-h-[calc(100vh-16rem)]">
                     <p className="text-secondary text-sm leading-relaxed">{message}</p>
                 </div>
 
-                {/* Footer */}
-                <div className="flex justify-end gap-3 p-6 border-t border-border bg-gray-50">
+                <div className="p-4 border-t border-border flex justify-end gap-3 bg-gray-50/50">
                     {cancelText && (
                         <button
                             onClick={onClose}

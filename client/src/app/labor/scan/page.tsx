@@ -22,7 +22,7 @@ export default function ScanPage() {
                 handleScan(decodedText);
                 scanner.clear(); 
             }, (error) => {
-                // console.warn(error);
+                
             });
 
             return () => {

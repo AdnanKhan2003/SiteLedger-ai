@@ -36,11 +36,11 @@ export default function ViewExpensePage() {
         if (!expense) return;
         const doc = new jsPDF();
 
-        
+
         doc.setFontSize(22);
         doc.text(expense.vendor || 'Vendor', 20, 20);
         doc.setFontSize(10);
-        
+
 
         doc.setFontSize(16);
         doc.text('INVOICE (RECEIVED)', 140, 20);
@@ -49,12 +49,12 @@ export default function ViewExpensePage() {
         doc.text(`Date: ${new Date(expense.invoiceDate).toLocaleDateString()}`, 140, 35);
         doc.text(`Category: ${expense.category}`, 140, 40);
 
-        
+
         doc.text('Bill To:', 20, 50);
         doc.setFontSize(12);
         doc.text('SideLedger Construction', 20, 55);
 
-        
+
         const tableColumn = ["Item", "Quantity", "Price", "Amount"];
         const items = expense.items && expense.items.length > 0
             ? expense.items
@@ -112,7 +112,6 @@ export default function ViewExpensePage() {
             </div>
 
             <div className="card p-8 bg-white border border-border shadow-sm">
-                {/* Visual Preview */}
                 <div className="flex flex-col md:flex-row justify-between mb-8 border-b border-border pb-8 gap-6">
                     <div>
                         <h2 className="text-2xl font-bold text-foreground mb-2">{expense.vendor}</h2>

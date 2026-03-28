@@ -119,9 +119,7 @@ export default function ProjectsPage() {
                             </div>
 
                             <div className=" space-y-2">
-                                <Link href={`/projects/${project._id}`} className="btn btn-outline w-full text-center justify-center">
-                                    View Dashboard
-                                </Link>
+
                                 {user?.role === 'admin' && (
                                     <div className="flex gap-2">
                                         <Link href={`/projects/${project._id}/edit`} className="btn bg-gray-100 w-full justify-center hover:bg-gray-200">

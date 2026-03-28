@@ -15,10 +15,10 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="bg-[#F7F6F3] min-h-screen p-4 md:p-8 pt-20 md:pt-8">
+        <div className="bg-white min-h-screen p-4 md:p-8 pt-20 md:pt-8">
             <div className="max-w-2xl mx-auto space-y-6">
 
-                {/* Header */}
+
                 <div className="flex items-center space-x-4 mb-8">
                     <div className="bg-white p-3 rounded-full shadow-sm">
                         <User size={32} className="text-primary" />
@@ -29,12 +29,12 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
-                {/* Profile Card */}
+
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div className="p-6 md:p-8">
                         <div className="space-y-6">
 
-                            {/* Avatar placeholder */}
+
                             <div className="flex justify-center mb-6">
                                 <div className="relative">
                                     <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center border-4 border-white shadow-md">
@@ -46,7 +46,6 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Name */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-gray-700 block">Full Name</label>
                                     <div className="relative">
@@ -62,7 +61,6 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
 
-                                {/* Phone */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-gray-700 block">Phone Number</label>
                                     <div className="relative">
@@ -78,7 +76,6 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
 
-                                {/* Email */}
                                 <div className="space-y-2 md:col-span-2">
                                     <label className="text-sm font-medium text-gray-700 block">Email Address</label>
                                     <div className="relative">
@@ -95,7 +92,7 @@ export default function SettingsPage() {
                                 </div>
                             </div>
 
-                            {/* Role Badge */}
+
                             <div className="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-100">
                                 <Shield size={20} className="text-blue-600 mr-3" />
                                 <div>

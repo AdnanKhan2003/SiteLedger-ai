@@ -226,7 +226,7 @@ export default function WorkerRegisterPage() {
                     </p>
                 </form>
 
-                {/* Success Modal */}
+
                 <Modal
                     isOpen={successModal.open}
                     onClose={() => {
