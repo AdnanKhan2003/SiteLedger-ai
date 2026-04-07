@@ -7,12 +7,14 @@ import Attendance from "../models/Attendance";
 import asyncHandler from "../lib/asyncHandler";
 import APIResponse from "../lib/APIResponse";
 import redis, { isRedisConnected } from "../lib/redis";
+import logger from "../lib/logger";
 
 export const getDashboardStats = asyncHandler(
   async (req: Request, res: Response) => {
     const cacheKey = "dashboard:stats";
     const cachedData = (redis && isRedisConnected) ? await redis.get(cacheKey) : null;
     if (cachedData) {
+      logger.debug('Dashboard stats served from cache');
       return res.json(
         new APIResponse(
           200,
@@ -58,6 +60,7 @@ export const getDashboardStats = asyncHandler(
 
     if (redis && isRedisConnected) {
         await redis.setex(cacheKey, 600, JSON.stringify(result));
+        logger.debug('Dashboard stats cached', { ttl: 600 });
     }
 
     res.json(
@@ -78,6 +81,7 @@ export const getCostBreakdown = asyncHandler(
     
     const cachedData = (redis && isRedisConnected) ? await redis.get(cacheKey) : null;
     if (cachedData) {
+      logger.debug(`Cost breakdown (${isMonthly ? 'monthly' : 'all-time'}) served from cache`);
       return res.json(
         new APIResponse(
           200,
@@ -102,8 +106,10 @@ export const getCostBreakdown = asyncHandler(
 
     if (redis && isRedisConnected) {
         await redis.setex(cacheKey, 600, JSON.stringify(breakdown));
+        logger.debug(`Cost breakdown (${isMonthly ? 'monthly' : 'all-time'}) computed and cached`);
     }
 
+    logger.debug('Cost breakdown fetched fresh from DB', { period: isMonthly ? 'month' : 'all-time' });
     res.json(
       new APIResponse(200, breakdown, "Cost breakdown fetched successfully"),
     );
@@ -115,6 +121,7 @@ export const getProjectProfitability = asyncHandler(
     const cacheKey = "analytics:profitability";
     const cachedData = (redis && isRedisConnected) ? await redis.get(cacheKey) : null;
     if (cachedData) {
+      logger.debug('Project profitability served from cache');
       return res.json(
         new APIResponse(
           200,
@@ -164,9 +171,11 @@ export const getProjectProfitability = asyncHandler(
       .sort((a, b) => b.revenue - a.revenue);
 
     if (redis && isRedisConnected) {
-        await redis.setex(cacheKey, 600, JSON.stringify(report)); // 10 minutes cache
+        await redis.setex(cacheKey, 600, JSON.stringify(report));
+        logger.debug('Project profitability computed and cached');
     }
 
+    logger.debug('Project profitability fetched fresh from DB', { projectCount: report.length });
     res.json(
       new APIResponse(
         200,

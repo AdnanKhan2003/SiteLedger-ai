@@ -2,6 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import logger from './lib/logger';
 
 import attendanceRoutes from './routes/attendanceRoutes';
 import expenseRoutes from './routes/expenseRoutes';
@@ -32,13 +33,12 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         
         if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
             callback(null, true);
         } else {
-            console.log(`[CORS REJECTED] Origin: ${origin}`);
+            logger.warn(`[CORS REJECTED] Origin: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -47,13 +47,9 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 app.use(helmet());
-app.use(morgan('dev'));
-
-
-app.use((req, res, next) => {
-    console.log(`[SERVER-INCOMING] ${req.method} ${req.url}`);
-    next();
-});
+app.use(morgan('combined', {
+    stream: { write: (message: string) => logger.http(message.trim()) }
+}));
 
 
 
@@ -82,11 +78,11 @@ app.use(errorHandler);
 export default app;
 
 process.on('unhandledRejection', (err: any) => {
-    console.error(`[UNHANDLED REJECTION] ${err.message}`);
+    logger.error(`[UNHANDLED REJECTION] ${err.message}`, { stack: err.stack });
     process.exit(1);
 });
 
 process.on('uncaughtException', (err: any) => {
-    console.error(`[UNCAUGHT EXCEPTION] ${err.message}`);
+    logger.error(`[UNCAUGHT EXCEPTION] ${err.message}`, { stack: err.stack });
     process.exit(1);
 });

@@ -4,6 +4,7 @@ import asyncHandler from "../lib/asyncHandler";
 import APIResponse from "../lib/APIResponse";
 import APIError from "../lib/APIError";
 import { clearAnalyticsCache } from "../lib/redis";
+import logger from "../lib/logger";
 
 export const getProjects = asyncHandler(async (req: Request, res: Response) => {
   const user = (req as any).user;
@@ -16,6 +17,7 @@ export const getProjects = asyncHandler(async (req: Request, res: Response) => {
   const projects = await Project.find(query)
     .sort({ createdAt: -1 })
     .populate("workers", "name workerRole specialty photoUrl");
+  logger.debug('Projects fetched', { role: user.role, count: projects.length });
   res.json(new APIResponse(200, projects, "Projects fetched successfully"));
 });
 
@@ -51,6 +53,7 @@ export const createProject = asyncHandler(
     const project = new Project(req.body);
     const saved = await project.save();
     await clearAnalyticsCache();
+    logger.info('Project created', { projectId: saved._id.toString(), name: saved.name });
     res
       .status(201)
       .json(new APIResponse(201, saved, "Project created successfully"));
@@ -64,6 +67,7 @@ export const getProjectById = asyncHandler(
       "name workerRole specialty photoUrl",
     );
     if (!project) throw new APIError(404, "Project not found");
+    logger.debug('Project fetched by id', { projectId: req.params.id });
     res.json(new APIResponse(200, project));
   },
 );
@@ -104,6 +108,7 @@ export const updateProject = asyncHandler(
       throw new APIError(404, "Project not found");
     }
     await clearAnalyticsCache();
+    logger.info('Project updated', { projectId: req.params.id });
     res.json(new APIResponse(200, project, "Project updated successfully"));
   },
 );
@@ -113,6 +118,7 @@ export const deleteProject = asyncHandler(
     const project = await Project.findByIdAndDelete(req.params.id);
     if (!project) throw new APIError(404, "Project not found");
     await clearAnalyticsCache();
+    logger.info('Project deleted', { projectId: req.params.id });
     res.json(new APIResponse(200, null, "Project deleted successfully"));
   },
 );

@@ -5,6 +5,7 @@ import asyncHandler from "../lib/asyncHandler";
 import APIResponse from "../lib/APIResponse";
 import APIError from "../lib/APIError";
 import { clearAnalyticsCache } from "../lib/redis";
+import logger from "../lib/logger";
 
 export const markAttendance = asyncHandler(
   async (req: Request, res: Response) => {
@@ -40,6 +41,7 @@ export const markAttendance = asyncHandler(
 
       await existing.save();
       await clearAnalyticsCache();
+      logger.info('Attendance updated', { workerId, date: attendanceDate });
       return res.json(
         new APIResponse(200, existing, "Attendance updated successfully"),
       );
@@ -56,6 +58,7 @@ export const markAttendance = asyncHandler(
 
     const saved = await attendance.save();
     await clearAnalyticsCache();
+    logger.info('Attendance marked', { workerId, date: attendanceDate, status: status || 'present' });
     res
       .status(201)
       .json(new APIResponse(201, saved, "Attendance marked successfully"));
@@ -84,6 +87,7 @@ export const getAttendance = asyncHandler(
       "worker",
       "name workerRole",
     );
+    logger.debug('Attendance fetched', { role: user.role, count: list.length });
     res.json(new APIResponse(200, list, "Attendance fetched successfully"));
   },
 );

@@ -6,6 +6,7 @@ import asyncHandler from "../lib/asyncHandler";
 import APIResponse from "../lib/APIResponse";
 import APIError from "../lib/APIError";
 import { clearAnalyticsCache } from "../lib/redis";
+import logger from "../lib/logger";
 
 export const registerWorker = asyncHandler(
   async (req: Request, res: Response) => {
@@ -44,6 +45,7 @@ export const registerWorker = asyncHandler(
     });
 
     await clearAnalyticsCache();
+    logger.info('Worker self-registered via QR', { email, name });
 
     const token = jwt.sign(
       { id: user._id, role: user.role },

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import redis, { isRedisConnected } from '../lib/redis';
 import asyncHandler from '../lib/asyncHandler';
 import APIResponse from '../lib/APIResponse';
+import logger from '../lib/logger';
 
 export const getHealth = asyncHandler(async (req: Request, res: Response) => {
     const healthData: any = {
@@ -34,6 +35,9 @@ export const getHealth = asyncHandler(async (req: Request, res: Response) => {
 
     if (healthData.checks.database === 'DOWN' || healthData.checks.redis === 'DOWN') {
         healthData.status = 'DEGRADED';
+        logger.warn('System health is DEGRADED', healthData.checks);
+    } else {
+        logger.debug('Health check passed', healthData.checks);
     }
 
     res.json(new APIResponse(200, healthData, 'Health check successful'));

@@ -8,6 +8,7 @@ import Invoice from '../models/Invoice';
 import asyncHandler from '../lib/asyncHandler';
 import APIResponse from '../lib/APIResponse';
 import APIError from '../lib/APIError';
+import logger from '../lib/logger';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
@@ -148,7 +149,7 @@ export const getAIInsights = asyncHandler(async (req: Request, res: Response) =>
         const response = await result.response;
         aiText = response.text();
     } catch (geminiError: unknown) {
-        console.error('Gemini API Error:', geminiError);
+        logger.error('Gemini API Error', { error: String(geminiError) });
 
         const err = geminiError as any;
         if (
@@ -163,6 +164,7 @@ export const getAIInsights = asyncHandler(async (req: Request, res: Response) =>
         }
     }
 
+    logger.info('AI insights generated', { role: user.role, userId: (req as any).user.id });
     res.json(new APIResponse(200, {
         insights: aiText,
         data: responseData

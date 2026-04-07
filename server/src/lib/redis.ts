@@ -1,5 +1,6 @@
 import Redis from 'ioredis';
 import { REDIS_URL, NODE_ENV } from '../constants/env';
+import logger from './logger';
 
 let redis: Redis | null = null;
 let isRedisConnected = false;
@@ -11,25 +12,25 @@ try {
             enableReadyCheck: false,
             connectTimeout: 5000,
             retryStrategy: (times) => {
-                if (times > 3) return null; // stop retrying after 3 times if it fails
+                if (times > 3) return null;
                 return Math.min(times * 50, 2000);
             }
         });
 
         redis.on('connect', () => {
             isRedisConnected = true;
-            console.log('Redis connected successfully');
+            logger.info('Redis connected successfully');
         });
 
         redis.on('error', (err) => {
             isRedisConnected = false;
-            console.error('Redis connection error (Caching disabled):', err.message);
+            logger.error(`Redis connection error (Caching disabled): ${err.message}`);
         });
     } else {
-        console.log('Redis URL not provided or in production without external Redis. Caching disabled.');
+    logger.warn('Redis URL not provided or in production without external Redis. Caching disabled.');
     }
 } catch (err) {
-    console.error('Failed to initialize Redis:', err);
+    logger.error('Failed to initialize Redis:', err);
 }
 
 export const clearAnalyticsCache = async () => {
@@ -42,7 +43,7 @@ export const clearAnalyticsCache = async () => {
       "analytics:costs:alltime"
     );
   } catch (err) {
-    console.error("Redis Cache Invalidation Error:", err);
+    logger.error('Redis Cache Invalidation Error:', err);
   }
 };
 
