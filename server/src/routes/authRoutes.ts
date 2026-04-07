@@ -14,7 +14,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey123';
 
 
 router.post('/register', authRateLimiter, asyncHandler(async (req, res) => {
-    const { name, email, password, role, phone, specialty, workerRole, dailyRate, photoUrl } = req.body;
+    const { name, email, password, phone, specialty, workerRole, dailyRate, photoUrl } = req.body;
 
     if (!name || !email || !password) {
         throw new APIError(400, 'Name, email, and password are required');
@@ -30,7 +30,7 @@ router.post('/register', authRateLimiter, asyncHandler(async (req, res) => {
         name,
         email,
         passwordHash,
-        role: role || 'worker',
+        role: 'worker', // Public registration always creates workers; admins are created separately
         phone,
         specialty,
         workerRole,

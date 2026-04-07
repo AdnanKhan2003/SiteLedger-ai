@@ -35,8 +35,12 @@ try {
 export const clearAnalyticsCache = async () => {
   if (!redis || !isRedisConnected) return;
   try {
-    await redis.del("dashboard:stats");
-    await redis.del("analytics:profitability");
+    await redis.del(
+      "dashboard:stats",
+      "analytics:profitability",
+      "analytics:costs:month",
+      "analytics:costs:alltime"
+    );
   } catch (err) {
     console.error("Redis Cache Invalidation Error:", err);
   }

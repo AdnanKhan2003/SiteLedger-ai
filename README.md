@@ -32,7 +32,6 @@ Construction managers struggle with **information asymmetry**. While physical la
 - **Dynamic Cost Breakdown**: Interactive analytics (Pie Charts/Bar Charts) showing exactly where every Rupee is spent.
 - **Labor & Attendance Management**: Digital worker tracking with shift management and daily rate calculations.
 - **Automated Invoicing**: Professional PDF invoicing with status tracking (Unpaid/Paid/Overdue).
-- **Global Search**: Instantly find any project, expense, or worker record with advanced filtering.
 
 ---
 
